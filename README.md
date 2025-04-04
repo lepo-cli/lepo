@@ -1,3 +1,5 @@
+<!-- deno-fmt-ignore-file -->
+
 # Lepo
 
 Lepo stands for "Llm tool for rEPOsitory"
