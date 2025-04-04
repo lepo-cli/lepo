@@ -1,0 +1,13 @@
+{
+  "$schema": "https://deno.land/x/deno@v2.2.4/cli/schemas/config-file.v1.json",
+  "imports": {
+    "@google/genai": "npm:@google/genai@0.7.0",
+    "@std/cli": "jsr:@std/cli@1.0.15",
+    "@std/io": "jsr:@std/io@0.225.2",
+    "@std/ulid": "jsr:@std/ulid@1.0.0"
+  },
+  "tasks": {
+    "main": "deno run --allow-all main.ts",
+    "reset": "deno run --allow-write reset.ts"
+  }
+}
