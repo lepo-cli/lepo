@@ -1,44 +1,68 @@
+import { DIR } from "./mod.ts";
+
+import { stringify } from "@libs/xml/stringify";
 import { ulid } from "@std/ulid/ulid";
 
-Deno.mkdirSync(".lepo", { recursive: true });
-Deno.removeSync(".lepo", { recursive: true });
-Deno.mkdirSync(".lepo", { recursive: true });
+const td = new TextDecoder();
 
-const e1 = [
-  [ulid(150000), "s1"],
-  [ulid(150001), "u0"],
-  [ulid(150002), "s0"],
-  [ulid(150003), "a0"],
+const lsFiles = new Deno.Command("git", { args: ["ls-files"] });
+
+const few = (now: number) => [
+  {
+    id: ulid(now - 4),
+    flag: "u1",
+    text: stringify({ ["plain-text"]: "예열해." }),
+  },
+  {
+    id: ulid(now - 3),
+    flag: "l1",
+    text: stringify({
+      ["execution-request"]: {
+        cmd: "git",
+        args: [{ arg: "ls-files" }],
+        description: "저장소를 구성하는 파일을 조회하는 명령",
+      },
+    }),
+  },
+  {
+    id: ulid(now - 2),
+    flag: "u1",
+    text: stringify({
+      ["execution-response"]: {
+        stdout: td.decode(lsFiles.outputSync().stdout),
+      },
+    }),
+  },
+  {
+    id: ulid(now - 1),
+    flag: "l1",
+    text: stringify({
+      ["plain-text"]: "응. 예열했어. 이제 뭐든지 물어봐!",
+    }),
+  },
 ];
 
-e1
-  .map(([curr, flag], i, arr) => `${curr}-${flag}-${arr[i - 1]?.[0] ?? "nil"}`)
-  .forEach((name) => {
-    Deno.writeTextFileSync(`.lepo/${name}.md`, "");
-  });
+export const reset = ({ dir, now }: {
+  readonly dir?: string;
+  readonly now?: number;
+} = {}) => {
+  const d = dir ?? DIR;
 
-const e2 = [
-  [ulid(150004), "s1"],
-  [ulid(150005), "u0"],
-  [ulid(150006), "s0"],
-  [ulid(150007), "a0"],
-];
+  Deno.mkdirSync(d, { recursive: true });
+  Deno.removeSync(d, { recursive: true });
+  Deno.mkdirSync(d, { recursive: true });
 
-e2
-  .map(([curr, flag], i, arr) => `${curr}-${flag}-${arr[i - 1]?.[0] ?? "nil"}`)
-  .forEach((name) => {
-    Deno.writeTextFileSync(`.lepo/${name}.md`, "");
-  });
+  few(now ?? Date.now())
+    .map((curr, i, arr) => ({
+      ...curr,
+      prev: arr[i - 1]?.id ?? "nil",
+    }))
+    .map(({ id, flag, prev, text }) => [`${id}-${flag}-${prev}`, text])
+    .forEach(([name, text]) => {
+      Deno.writeTextFileSync(`${d}/${name}.txt`, text);
+    });
+};
 
-const e3 = [
-  [ulid(150008), "s0"],
-  [ulid(150009), "a0"],
-];
-
-e3
-  .map(([curr, flag], i, arr) =>
-    `${curr}-${flag}-${arr[i - 1]?.[0] ?? e1[1][0]}`
-  )
-  .forEach((name) => {
-    Deno.writeTextFileSync(`.lepo/${name}.md`, "");
-  });
+if (import.meta.main) {
+  reset();
+}
