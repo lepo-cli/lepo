@@ -5,9 +5,13 @@ import { ulid } from "@std/ulid/ulid";
 
 const td = new TextDecoder();
 
-const lsFiles = new Deno.Command("git", { args: ["ls-files"] });
+const ls = new Deno.Command("git", { args: ["ls-files"] });
 
-const few = (now: number) => [
+const few = (now: number): Readonly<{
+  readonly id: string;
+  readonly flag: string;
+  readonly text: string;
+}[]> => [
   {
     id: ulid(now - 4),
     flag: "u1",
@@ -29,7 +33,7 @@ const few = (now: number) => [
     flag: "u1",
     text: stringify({
       ["execution-response"]: {
-        stdout: td.decode(lsFiles.outputSync().stdout),
+        stdout: td.decode(ls.outputSync().stdout),
       },
     }),
   },
@@ -43,9 +47,9 @@ const few = (now: number) => [
 ];
 
 export const reset = ({ dir, now }: {
-  readonly dir?: string;
-  readonly now?: number;
-} = {}) => {
+  dir: string;
+  now?: number;
+}): void => {
   const d = dir ?? DIR;
 
   Deno.mkdirSync(d, { recursive: true });
@@ -53,16 +57,29 @@ export const reset = ({ dir, now }: {
   Deno.mkdirSync(d, { recursive: true });
 
   few(now ?? Date.now())
-    .map((curr, i, arr) => ({
+    .map((curr, i, arr): {
+      readonly id: string;
+      readonly flag: string;
+      readonly prev: string;
+      readonly text: string;
+    } => ({
       ...curr,
       prev: arr[i - 1]?.id ?? "nil",
     }))
-    .map(({ id, flag, prev, text }) => [`${id}-${flag}-${prev}`, text])
-    .forEach(([name, text]) => {
+    .map(({ id, flag, prev, text }): Readonly<[string, string]> => [
+      `${id}-${flag}-${prev}`,
+      text,
+    ])
+    .forEach(([name, text]: Readonly<[string, string]>): void => {
       Deno.writeTextFileSync(`${d}/${name}.txt`, text);
     });
 };
 
 if (import.meta.main) {
-  reset();
+  try {
+    reset({ dir: DIR });
+  } catch (e) {
+    console.error(e);
+    Deno.exit(1);
+  }
 }

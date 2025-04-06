@@ -1,7 +1,7 @@
+import { debug } from "./debug.ts";
 import type { BubbMeta, BubbName } from "./mod.ts";
 import { DIR } from "./mod.ts";
 import { toBubbName } from "./bubb.ts";
-import { debug } from "./debug.ts";
 import { reset } from "./reset.ts";
 
 const NO_BUBB = Symbol();
@@ -15,12 +15,14 @@ export const conv = ({ dir, tail }: {
   tail?: string;
 }): Promise<Readonly<BubbName[]>> =>
   Deno.stat(dir)
-    .then(({ isDirectory }) => {
+    .then(({ isDirectory }: Deno.FileInfo): void => {
       if (!isDirectory) throw CONFLICT;
     })
     .then(() => Deno.readDir(dir))
-    .then((entries) => toBubbName({ dir, entries }))
-    .then(async (names) => {
+    .then((entries: AsyncIterable<Deno.DirEntry>) =>
+      toBubbName({ dir, entries })
+    )
+    .then<Readonly<BubbName[]>>(async (names: AsyncGenerator<BubbName>) => {
       const arr: BubbName[] = [];
       const map: Map<string, BubbMeta> = new Map();
 
@@ -73,8 +75,11 @@ export const conv = ({ dir, tail }: {
 
 if (import.meta.main) {
   conv({ dir: DIR })
-    .then((bnames) => {
+    .then((bnames: Readonly<BubbName[]>): void => {
       console.info("bnames:", bnames);
     })
-    .catch(console.error);
+    .catch((e): void => {
+      console.error(e);
+      Deno.exit(1);
+    });
 }

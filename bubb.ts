@@ -67,12 +67,14 @@ export const bubb = ({ dir, id: i }: {
   id?: string;
 }): Promise<BubbName | undefined> =>
   Deno.stat(dir)
-    .then(({ isDirectory }) => {
+    .then(({ isDirectory }: Deno.FileInfo): void => {
       if (!isDirectory) throw CONFLICT;
     })
     .then(() => Deno.readDir(dir))
-    .then((entries) => toBubbName({ dir, entries }))
-    .then<BubbName | undefined>(async (names) => {
+    .then((entries: AsyncIterable<Deno.DirEntry>) =>
+      toBubbName({ dir, entries })
+    )
+    .then<BubbName | undefined>(async (names: AsyncGenerator<BubbName>) => {
       const arr: BubbName[] = [];
       const map: Map<string, BubbMeta> = new Map();
 
@@ -93,5 +95,12 @@ export const bubb = ({ dir, id: i }: {
     });
 
 if (import.meta.main) {
-  bubb({ dir: DIR });
+  bubb({ dir: DIR })
+    .then((bname): void => {
+      console.info("bname:", bname);
+    })
+    .catch((e): void => {
+      console.error(e);
+      Deno.exit(1);
+    });
 }
