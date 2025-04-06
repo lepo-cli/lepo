@@ -36,6 +36,8 @@ const inst: string = instTmpl.replaceAll(
   encode(td.decode(new Deno.Command("pwd").outputSync().stdout).trim()),
 );
 
+debug("inst:", inst.substring(0, 50) + "\x1b[90m...\x1b[0m");
+
 const user = (): Promise<string> => {
   Deno.stdout.writeSync(te.encode(USER));
   const query = td.decode(readAllSync(Deno.stdin));
