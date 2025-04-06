@@ -1,6 +1,6 @@
 export const DIR = ".lepo";
 
-export type Role = "user" | "lepo" | "syst";
+export type Role = "user" | "lepo" | "meta";
 
 export type BubbMeta = {
   readonly prev?: string;

@@ -31,8 +31,8 @@ export async function* toBubbName({ dir, entries }: {
       ? "user"
       : r === "l"
       ? "lepo"
-      : r === "s"
-      ? "syst"
+      : r === "m"
+      ? "meta"
       : NIL;
     if (role === NIL) continue;
 

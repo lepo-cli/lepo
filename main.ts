@@ -15,10 +15,10 @@ const BYE = Symbol();
 const NEVER = Symbol();
 const NOT_FOUND = Symbol("not found");
 
-const CC = "\x1b[36m";
-const CM = "\x1b[35m";
-const CY = "\x1b[33m";
-const CR = "\x1b[0m";
+const USER = "\n\x1b[36m<<< USER:\x1b[0m ";
+const LEPO = "\n\x1b[33m>>> LEPO:\x1b[0m ";
+const META = "\n\x1b[35m>>> META:\x1b[0m ";
+const p = (r: Role): string => r === "user" ? USER : r === "lepo" ? LEPO : META;
 
 const td = new TextDecoder();
 const te = new TextEncoder();
@@ -37,7 +37,7 @@ const inst: string = instTmpl.replaceAll(
 );
 
 const user = (): Promise<string> => {
-  Deno.stdout.writeSync(te.encode(CC + "\n<<< USER: " + CR));
+  Deno.stdout.writeSync(te.encode(USER));
   const query = td.decode(readAllSync(Deno.stdin));
   return ESC.has(query.trim()) ? Promise.reject(BYE) : Promise.resolve(query);
 };
@@ -46,7 +46,7 @@ const save = ({ dir, prev, role, isHidden, text }: {
   dir: string;
   prev: string;
   role: Role;
-  isHidden: boolean;
+  isHidden?: boolean;
   text: string;
 }): Promise<string> =>
   bubb({ dir, id: prev })
@@ -67,7 +67,7 @@ const MODEL = "gemini-2.0-flash-lite";
 debug("MODEL:", MODEL);
 
 const lepo = ({ dir, tail }: { dir: string; tail: string }): Promise<string> =>
-  Deno.stdout.write(te.encode(CY + ">>> LEPO: " + CR))
+  Deno.stdout.write(te.encode(LEPO))
     .then<Readonly<BubbName[]>>(() => conv({ dir, tail }))
     .then((bnames: Readonly<BubbName[]>): Readonly<[Role, string]>[] =>
       bnames.map(({ meta: { role, path } }): Readonly<[Role, string]> => [
@@ -105,13 +105,12 @@ const loop = ({ dir, tail }: { dir: string; tail: string }): Promise<string> =>
         dir,
         prev: tail,
         role: "user",
-        isHidden: false,
         text: stringify({ ["plain-text"]: query }),
       })
     )
     .then<string>((id: string) =>
       lepo({ dir, tail: id }).then<string>((text: string) =>
-        save({ dir, prev: tail, role: "lepo", isHidden: false, text })
+        save({ dir, prev: id, role: "lepo", text })
       )
     )
     .then<string>((id: string) => loop({ dir, tail: id }));
@@ -119,7 +118,24 @@ const loop = ({ dir, tail }: { dir: string; tail: string }): Promise<string> =>
 const dir = DIR;
 debug("dir:", dir);
 
+const HOW_TO_SEND =
+  "\x1b[90m[\x1b[32mEnter\x1b[90m] then [\x1b[32mCtrl + D\x1b[90m] \x1b[0mto submit";
+
 conv({ dir })
+  .then((bnames: Readonly<BubbName[]>): void => {
+    debug("conv:");
+    bnames
+      .map(({ id, meta: { role, isHidden } }) =>
+        `  ${role}[${isHidden ? "x" : " "}]${id}`
+      )
+      .forEach((record) => debug(record));
+
+    for (const { meta: { role, isHidden, path } } of bnames) {
+      if (isHidden) continue;
+      Deno.stdout.writeSync(te.encode(p(role)));
+      Deno.stdout.writeSync(Deno.readFileSync(path));
+    }
+  })
   .then<BubbName | undefined>(() => bubb({ dir }))
   .then<string>((name?: BubbName) => {
     if (!name) throw NEVER;
@@ -127,13 +143,17 @@ conv({ dir })
     return name.meta.role === "lepo"
       ? name.id
       : lepo({ dir, tail: name.id }).then<string>((text: string) =>
-        save({ dir, prev: name.id, role: "lepo", isHidden: false, text })
+        save({ dir, prev: name.id, role: "lepo", text })
       );
   })
-  .then<string>((id: string) => loop({ dir, tail: id }))
+  .then((id: string): string => {
+    Deno.stdout.writeSync(te.encode(META + HOW_TO_SEND));
+    return id;
+  })
+  .then<string>((tail: string) => loop({ dir, tail }))
   .catch((e): void => {
     if (e === BYE) {
-      Deno.stdout.writeSync(te.encode(`${CM}>>> SYST:${CR} bye\n`));
+      Deno.stdout.writeSync(te.encode(META + "bye\n"));
     } else {
       console.error(e);
       Deno.exit(1);
