@@ -50,11 +50,9 @@ export const reset = ({ dir, now }: {
   dir: string;
   now?: number;
 }): void => {
-  const d = dir ?? DIR;
-
-  Deno.mkdirSync(d, { recursive: true });
-  Deno.removeSync(d, { recursive: true });
-  Deno.mkdirSync(d, { recursive: true });
+  Deno.mkdirSync(dir, { recursive: true });
+  Deno.removeSync(dir, { recursive: true });
+  Deno.mkdirSync(dir, { recursive: true });
 
   few(now ?? Date.now())
     .map((curr, i, arr): {
@@ -71,7 +69,7 @@ export const reset = ({ dir, now }: {
       text,
     ])
     .forEach(([name, text]: Readonly<[string, string]>): void => {
-      Deno.writeTextFileSync(`${d}/${name}.txt`, text);
+      Deno.writeTextFileSync(`${dir}/${name}.txt`, text);
     });
 };
 
