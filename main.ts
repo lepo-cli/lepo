@@ -36,7 +36,7 @@ const inst: string = instTmpl.replaceAll(
   encode(td.decode(new Deno.Command("pwd").outputSync().stdout).trim()),
 );
 
-debug("inst:", inst.substring(0, 50) + "\x1b[90m...\x1b[0m");
+debug(() => ["inst:", inst.substring(0, 50) + "\x1b[90m...\x1b[0m"]);
 
 const user = (): Promise<string> => {
   Deno.stdout.writeSync(te.encode(USER));
@@ -125,12 +125,12 @@ const HOW_TO_SEND =
 
 conv({ dir })
   .then((bnames: Readonly<BubbName[]>): void => {
-    debug("conv:");
-    bnames
-      .map(({ id, meta: { role, isHidden } }) =>
-        `  ${role}[${isHidden ? "x" : " "}]${id}`
-      )
-      .forEach((record) => debug(record));
+    debug(() => [
+      "conv:",
+      ...bnames.map(({ id, meta: { role, isHidden } }) =>
+        `\n  ${role}[${isHidden ? "x" : " "}]${id}`
+      ),
+    ]);
 
     for (const { meta: { role, isHidden, path } } of bnames) {
       if (isHidden) continue;
