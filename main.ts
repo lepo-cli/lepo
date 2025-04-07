@@ -16,8 +16,8 @@ const NEVER = Symbol();
 const NOT_FOUND = Symbol("not found");
 
 const USER = "\n\x1b[36m<<< USER:\x1b[0m ";
-const LEPO = "\n\x1b[33m>>> LEPO:\x1b[0m ";
-const META = "\n\x1b[35m>>> META:\x1b[0m ";
+const LEPO = "\x1b[33m>>> LEPO:\x1b[0m ";
+const META = "\x1b[35m>>> META:\x1b[0m ";
 const p = (r: Role): string => r === "user" ? USER : r === "lepo" ? LEPO : META;
 
 const td = new TextDecoder();
@@ -102,13 +102,13 @@ const lepo = ({ dir, tail }: { dir: string; tail: string }): Promise<string> =>
 
 const loop = ({ dir, tail }: { dir: string; tail: string }): Promise<string> =>
   user()
-    .then<string>((query: string) =>
-      save({
-        dir,
-        prev: tail,
-        role: "user",
-        text: stringify({ ["plain-text"]: query }),
-      })
+    .then((query: string): string => {
+      const text = stringify({ ["plain-text"]: query });
+      debug("text:", text);
+      return text;
+    })
+    .then<string>((text: string) =>
+      save({ dir, prev: tail, role: "user", text })
     )
     .then<string>((id: string) =>
       lepo({ dir, tail: id }).then<string>((text: string) =>
