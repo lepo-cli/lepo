@@ -1,5 +1,3 @@
-import { DIR } from "./mod.ts";
-
 import { stringify } from "@libs/xml/stringify";
 import { ulid } from "@std/ulid/ulid";
 
@@ -75,7 +73,7 @@ export const reset = ({ dir, now }: {
 
 if (import.meta.main) {
   try {
-    reset({ dir: DIR });
+    reset({ dir: ".lepo" });
   } catch (e) {
     console.error(e);
     Deno.exit(1);

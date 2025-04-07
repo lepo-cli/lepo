@@ -1,5 +1,16 @@
-import type { BubbMeta, BubbName } from "./mod.ts";
-import { DIR } from "./mod.ts";
+export type Role = "user" | "lepo" | "meta";
+
+export type BubbMeta = {
+  readonly prev?: string;
+  readonly role: Role;
+  readonly isHidden: boolean;
+  readonly path: string;
+};
+
+export type BubbName = {
+  readonly id: string;
+  readonly meta: BubbMeta;
+};
 
 const ULID_REGEX = /^[0-9A-HJKMNP-TV-Z]{26}$/i;
 const NIL = Symbol();
@@ -8,11 +19,10 @@ export const CONFLICT = Symbol(
 );
 export const BUBB_NOT_FOUND = Symbol("bubb not found.");
 
-export async function* toBubbName({ dir, entries }: {
+export async function* readBubbNames({ dir }: {
   dir: string;
-  entries: AsyncIterable<Deno.DirEntry>;
 }): AsyncGenerator<BubbName> {
-  for await (const { name, isFile } of entries) {
+  for await (const { name, isFile } of Deno.readDir(dir)) {
     if (!isFile) continue;
 
     const [id, flag, prevtxt, ...rest] = name.split("-");
@@ -70,10 +80,7 @@ export const bubb = ({ dir, id: i }: {
     .then(({ isDirectory }: Deno.FileInfo): void => {
       if (!isDirectory) throw CONFLICT;
     })
-    .then(() => Deno.readDir(dir))
-    .then((entries: AsyncIterable<Deno.DirEntry>) =>
-      toBubbName({ dir, entries })
-    )
+    .then(() => readBubbNames({ dir }))
     .then<BubbName | undefined>(async (names: AsyncGenerator<BubbName>) => {
       const arr: BubbName[] = [];
       const map: Map<string, BubbMeta> = new Map();
@@ -95,7 +102,7 @@ export const bubb = ({ dir, id: i }: {
     });
 
 if (import.meta.main) {
-  bubb({ dir: DIR })
+  bubb({ dir: ".lepo" })
     .then((bname): void => {
       console.info("bname:", bname);
     })

@@ -1,104 +1,13 @@
 import { debug } from "./debug.ts";
-import type { BubbName, Role } from "./mod.ts";
-import { DIR } from "./mod.ts";
+import type { BubbName, Role } from "./bubb.ts";
 import { bubb } from "./bubb.ts";
 import { conv } from "./conv.ts";
+import { lepo, PREFIX as LEPO } from "./lepo.ts";
+import { PREFIX as META } from "./meta.ts";
+import { BYE, PREFIX as USER, user } from "./user.ts";
+import { save } from "./save.ts";
 
 import { stringify } from "@libs/xml/stringify";
-import { readAllSync } from "@std/io/read-all";
-import { ulid } from "@std/ulid/ulid";
-import type { Content, GenerateContentResponse } from "@google/genai";
-import { GoogleGenAI } from "@google/genai";
-
-const ESC: ReadonlySet<string> = new Set(["bye", "exit", "quit"]);
-const BYE = Symbol();
-const NEVER = Symbol();
-const NOT_FOUND = Symbol("not found");
-
-const USER = "\n\x1b[36m<<< USER:\x1b[0m ";
-const LEPO = "\x1b[33m>>> LEPO:\x1b[0m ";
-const META = "\x1b[35m>>> META:\x1b[0m ";
-const p = (r: Role): string => r === "user" ? USER : r === "lepo" ? LEPO : META;
-
-const td = new TextDecoder();
-const te = new TextEncoder();
-
-const encode = (str: string): string => {
-  const wrapped = stringify({ str });
-  return wrapped.substring(5, wrapped.length - 6);
-};
-
-const instTmpl: string = Deno
-  .readTextFileSync(new URL("inst.txt", import.meta.url));
-
-const inst: string = instTmpl.replaceAll(
-  "{{wd}}",
-  encode(td.decode(new Deno.Command("pwd").outputSync().stdout).trim()),
-);
-
-debug(() => ["inst:", inst.substring(0, 50) + "\x1b[90m...\x1b[0m"]);
-
-const user = (): Promise<string> => {
-  Deno.stdout.writeSync(te.encode(USER));
-  const query = td.decode(readAllSync(Deno.stdin));
-  return ESC.has(query.trim()) ? Promise.reject(BYE) : Promise.resolve(query);
-};
-
-const save = ({ dir, prev, role, isHidden, text }: {
-  dir: string;
-  prev: string;
-  role: Role;
-  isHidden?: boolean;
-  text: string;
-}): Promise<string> =>
-  bubb({ dir, id: prev })
-    .then((name?: BubbName): string => {
-      if (!name) throw NOT_FOUND;
-      return ulid();
-    })
-    .then<string>((curr: string) =>
-      Deno.writeTextFile(
-        `${dir}/${curr}-${role.charAt(0)}${isHidden ? "1" : "0"}-${prev}.txt`,
-        text,
-      )
-        .then((): string => curr)
-    );
-
-const ai = new GoogleGenAI({ apiKey: Deno.env.get("API_KEY") });
-const MODEL = "gemini-2.0-flash-lite";
-debug("MODEL:", MODEL);
-
-const lepo = ({ dir, tail }: { dir: string; tail: string }): Promise<string> =>
-  Deno.stdout.write(te.encode(LEPO))
-    .then<Readonly<BubbName[]>>(() => conv({ dir, tail }))
-    .then((bnames: Readonly<BubbName[]>): Readonly<[Role, string]>[] =>
-      bnames.map(({ meta: { role, path } }): Readonly<[Role, string]> => [
-        role,
-        Deno.readTextFileSync(path),
-      ])
-    )
-    .then((tuples: Readonly<[Role, string]>[]): Content[] =>
-      tuples.map(([role, text]): Content => ({
-        role: role === "lepo" ? "model" : "user",
-        parts: [{ text }],
-      }))
-    )
-    .then<AsyncGenerator<GenerateContentResponse>>((contents: Content[]) =>
-      ai.models.generateContentStream({
-        model: MODEL,
-        config: { systemInstruction: inst },
-        contents,
-      })
-    )
-    .then<string>(async (gen: AsyncGenerator<GenerateContentResponse>) => {
-      const arr: string[] = [];
-      for await (const res of gen) {
-        const text = res.candidates?.[0].content?.parts?.[0].text;
-        Deno.stdout.writeSync(te.encode(text));
-        arr.push(text ?? "");
-      }
-      return arr.join("");
-    });
 
 const loop = ({ dir, tail }: { dir: string; tail: string }): Promise<string> =>
   user()
@@ -117,11 +26,21 @@ const loop = ({ dir, tail }: { dir: string; tail: string }): Promise<string> =>
     )
     .then<string>((id: string) => loop({ dir, tail: id }));
 
-const dir = DIR;
-debug("dir:", dir);
+const NEVER = Symbol();
+
+const PREFIX: ReadonlyMap<Role, string> = new Map([
+  ["lepo", LEPO],
+  ["meta", META],
+  ["user", USER],
+]);
 
 const HOW_TO_SEND =
   "\x1b[90m[\x1b[32mEnter\x1b[90m] then [\x1b[32mCtrl + D\x1b[90m] \x1b[0mto submit";
+
+const te = new TextEncoder();
+
+const dir = ".lepo";
+debug("dir:", dir);
 
 conv({ dir })
   .then((bnames: Readonly<BubbName[]>): void => {
@@ -134,7 +53,7 @@ conv({ dir })
 
     for (const { meta: { role, isHidden, path } } of bnames) {
       if (isHidden) continue;
-      Deno.stdout.writeSync(te.encode(p(role)));
+      Deno.stdout.writeSync(te.encode(PREFIX.get(role)));
       Deno.stdout.writeSync(Deno.readFileSync(path));
     }
   })
