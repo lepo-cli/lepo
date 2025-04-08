@@ -58,13 +58,8 @@ if (import.meta.main) {
   const empty = "";
   console.info("empty:", convert(empty));
 
-  const weird = `weird`;
-  console.info("weird:", convert(weird));
-
   const plain = `
-    <plain-text>
-      안녕하세요.
-    </plain-text>
+    안녕하세요.
   `;
   console.info("plain:", convert(plain));
 
@@ -105,9 +100,7 @@ if (import.meta.main) {
   console.info("desc:", convert(desc));
 
   const mixed = `
-    <plain-text>
-      파일 리스팅
-    </plain-text>
+    파일 리스팅
     <execution-request>
       <cmd>ls</cmd>
     </execution-request>
@@ -119,9 +112,7 @@ if (import.meta.main) {
       <cmd>hello</cmd>
       <args></args>
     </execution-request>
-    <plain-text>
-      이어서
-    </plain-text>
+    이어서
     <execution-request>
       <cmd>ls</cmd>
       <args>

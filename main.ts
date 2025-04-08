@@ -29,8 +29,6 @@ const loop = ({ dir, prev }: { dir: string; prev: string }): Promise<string> =>
     )
     .then<string>((id: string) => loop({ dir, prev: id }));
 
-const NEVER = Symbol();
-
 const prefix: ReadonlyMap<Role, string> = new Map([
   ["lepo", LEPO],
   ["meta", META],
@@ -62,7 +60,7 @@ conv({ dir })
   })
   .then<BubbName | undefined>(() => bubb({ dir }))
   .then<string>((name?: BubbName) => {
-    if (!name) throw NEVER;
+    if (!name) throw new Error();
 
     return name.meta.role === "lepo"
       ? name.id

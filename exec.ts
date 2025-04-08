@@ -9,10 +9,12 @@ import { PREFIX as META } from "./meta.ts";
 
 import { stringify } from "@libs/xml/stringify";
 
+class NotFound extends Error {
+  override name = "NotFound";
+}
+
 const te = new TextEncoder();
 const td = new TextDecoder();
-
-const NOT_FOUND = Symbol("not found");
 
 export const END = Symbol();
 
@@ -25,7 +27,7 @@ export const loop = ({ dir, prev }: {
 }): Promise<string> =>
   bubb({ dir, id: prev })
     .then((name?: BubbName): Readonly<ExecReq[]> => {
-      if (!name) throw NOT_FOUND;
+      if (!name) throw new NotFound(`bubb#${prev} not found`);
 
       return name.meta.role === "lepo"
         ? convert(Deno.readTextFileSync(name.meta.path))
@@ -43,6 +45,7 @@ export const loop = ({ dir, prev }: {
 
         if (answer.trim().toLowerCase() !== "y") continue;
 
+        // TODO: 없는 명령어로 실행할 때 에러 처리
         const {
           success,
           stdout,

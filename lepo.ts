@@ -57,10 +57,14 @@ export const lepo = ({ dir, tail }: {
     )
     .then<string>(async (gen: AsyncGenerator<GenerateContentResponse>) => {
       const arr: string[] = [];
+
       for await (const res of gen) {
         const text = res.candidates?.[0]?.content?.parts?.[0]?.text;
+
         Deno.stdout.writeSync(te.encode(text));
+
         arr.push(text ?? "");
       }
+
       return arr.join("");
     });

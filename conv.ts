@@ -3,11 +3,15 @@ import type { BubbMeta, BubbName } from "./bubb.ts";
 import { readBubbNames } from "./bubb.ts";
 import { reset } from "./reset.ts";
 
+class NotFound extends Error {
+  override name = "NotFound";
+}
+
+class Conflict extends Error {
+  override name = "Conflict";
+}
+
 const NO_BUBB = Symbol();
-export const CONFLICT = Symbol(
-  "dirname conflicts. check out --save-to options to address it.",
-);
-export const BUBB_NOT_FOUND = Symbol("bubb not found.");
 
 export const conv = ({ dir, tail }: {
   dir: string;
@@ -15,7 +19,11 @@ export const conv = ({ dir, tail }: {
 }): Promise<Readonly<BubbName[]>> =>
   Deno.stat(dir)
     .then(({ isDirectory }: Deno.FileInfo): void => {
-      if (!isDirectory) throw CONFLICT;
+      if (!isDirectory) {
+        throw new Conflict(
+          `"${dir}" conflicts. check out --save-to options to address it.`,
+        );
+      }
     })
     .then(() => readBubbNames({ dir }))
     .then<Readonly<BubbName[]>>(async (names: AsyncGenerator<BubbName>) => {
@@ -39,14 +47,14 @@ export const conv = ({ dir, tail }: {
       const t = tail ?? sorted[sorted.length - 1].id;
 
       if (!map.has(t)) {
-        throw BUBB_NOT_FOUND;
+        throw new NotFound(`bubb#${t} not found`);
       }
 
       const c: BubbName[] = [];
 
       for (let id: string | undefined = t; id; id = map.get(id)?.prev) {
         if (!map.has(id)) {
-          console.info(`bubb#${id} not found. incomplete conv returned.`);
+          console.warn(`bubb#${id} not found. incomplete conv returned.`);
           break;
         }
 
@@ -57,11 +65,11 @@ export const conv = ({ dir, tail }: {
     })
     .catch((e) => {
       if (e.code === "ENOENT") {
-        debug(`${dir} not found`);
+        debug(`"${dir}" not found`);
         reset({ dir });
         return conv({ dir });
       } else if (e === NO_BUBB) {
-        debug(`${dir} has no bubb`);
+        debug(`"${dir}" has no bubb`);
         reset({ dir });
         return conv({ dir });
       } else {
