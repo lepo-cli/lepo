@@ -202,3 +202,8 @@ lepo
 &quot;execution-response&quot; 를 작성하지 마세요.
 &quot;execution-response&quot; 는 이 프로그램이 사용자를 대신하여 작성하는
 것입니다.
+
+사용자가 &quot;이 프로그램&quot; 이라고 할 때에는 사용자가 관심있는 현재
+디렉토리(Repository)의 타겟 프로그램을 의미할 가능성이 커. 이 프로그램(Lepo)과
+혼동하지 않도록 정말로 이 프로그램을 의미한다면 &quot;Lepo&quot; 라고 하도록
+요구해.
