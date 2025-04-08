@@ -2,6 +2,7 @@ import { debug } from "./debug.ts";
 import type { BubbName, Role } from "./bubb.ts";
 import { bubb } from "./bubb.ts";
 import { conv } from "./conv.ts";
+import { END as EXEC_LOOP_END, loop as execLoop } from "./exec.ts";
 import { lepo, PREFIX as LEPO } from "./lepo.ts";
 import { PREFIX as META } from "./meta.ts";
 import { BYE, PREFIX as USER, user } from "./user.ts";
@@ -9,26 +10,28 @@ import { save } from "./save.ts";
 
 import { stringify } from "@libs/xml/stringify";
 
-const loop = ({ dir, tail }: { dir: string; tail: string }): Promise<string> =>
-  user()
+const loop = ({ dir, prev }: { dir: string; prev: string }): Promise<string> =>
+  execLoop({ dir, prev })
+    .catch((e) => {
+      if (e !== EXEC_LOOP_END) throw e;
+    })
+    .then(() => user())
     .then((query: string): string => {
       const text = stringify({ ["plain-text"]: query });
       debug("text:", text);
       return text;
     })
-    .then<string>((text: string) =>
-      save({ dir, prev: tail, role: "user", text })
-    )
+    .then<string>((text: string) => save({ dir, prev, role: "user", text }))
     .then<string>((id: string) =>
       lepo({ dir, tail: id }).then<string>((text: string) =>
         save({ dir, prev: id, role: "lepo", text })
       )
     )
-    .then<string>((id: string) => loop({ dir, tail: id }));
+    .then<string>((id: string) => loop({ dir, prev: id }));
 
 const NEVER = Symbol();
 
-const PREFIX: ReadonlyMap<Role, string> = new Map([
+const prefix: ReadonlyMap<Role, string> = new Map([
   ["lepo", LEPO],
   ["meta", META],
   ["user", USER],
@@ -53,7 +56,7 @@ conv({ dir })
 
     for (const { meta: { role, isHidden, path } } of bnames) {
       if (isHidden) continue;
-      Deno.stdout.writeSync(te.encode(PREFIX.get(role)));
+      Deno.stdout.writeSync(te.encode(prefix.get(role)));
       Deno.stdout.writeSync(Deno.readFileSync(path));
     }
   })
@@ -71,7 +74,7 @@ conv({ dir })
     Deno.stdout.writeSync(te.encode(META + HOW_TO_SEND));
     return id;
   })
-  .then<string>((tail: string) => loop({ dir, tail }))
+  .then<string>((id: string) => loop({ dir, prev: id }))
   .catch((e): void => {
     if (e === BYE) {
       Deno.stdout.writeSync(te.encode(META + "bye\n"));

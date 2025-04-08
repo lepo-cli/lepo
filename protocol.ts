@@ -2,12 +2,19 @@ import { parse } from "@libs/xml/parse";
 
 const NIL = Symbol();
 
-export type Exec = {
+export type ExecRes = {
+  readonly stdout?: string;
+  readonly stderr?: string;
+  readonly code?: number;
+  readonly signal?: string;
+};
+
+export type ExecReq = {
   readonly cmd: string;
   readonly args: Readonly<string[]>;
 };
 
-export const convert = (text: string): Readonly<Exec[]> => {
+export const convert = (text: string): Readonly<ExecReq[]> => {
   const p = (() => {
     try {
       return parse(`<model>${text}</model>`);
@@ -32,7 +39,7 @@ export const convert = (text: string): Readonly<Exec[]> => {
     .filter((er: unknown) => er && typeof er === "object")
     .map((er: unknown): object => er as object)
     .filter((er: object) => typeof (er as { cmd: unknown }).cmd === "string")
-    .map((er: object): Exec => ({
+    .map((er: object): ExecReq => ({
       cmd: (er as { cmd: string }).cmd,
       args: Array.isArray((er as { args: unknown }).args)
         ? []
