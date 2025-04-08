@@ -13,12 +13,12 @@ const few = (now: number): Readonly<{
   {
     id: ulid(now - 4),
     flag: "u1",
-    text: stringify({ ["plain-text"]: "예열해." }),
+    text: "예열해.",
   },
   {
     id: ulid(now - 3),
     flag: "l1",
-    text: stringify({
+    text: "응. 그럼 추적 중인 파일을 한 번 볼게.\n" + stringify({
       ["execution-request"]: {
         cmd: "git",
         args: [{ arg: "ls-files" }],
@@ -38,9 +38,7 @@ const few = (now: number): Readonly<{
   {
     id: ulid(now - 1),
     flag: "l1",
-    text: stringify({
-      ["plain-text"]: "응. 예열했어. 이제 뭐든지 물어봐!",
-    }),
+    text: "여기에서 어떤 도움이 필요해?",
   },
 ];
 
