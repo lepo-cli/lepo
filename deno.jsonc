@@ -8,6 +8,7 @@
     "@std/ulid": "jsr:@std/ulid@1.0.0"
   },
   "tasks": {
+    "check": "deno check **/*.ts && deno lint && deno fmt --check",
     "main": "deno run --allow-all main.ts",
     "reset": "deno run --allow-write reset.ts"
   }
