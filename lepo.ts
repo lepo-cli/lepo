@@ -35,8 +35,8 @@ export const lepo = ({ dir, tail }: {
   tail: string;
 }): Promise<string> =>
   Deno.stdout.write(te.encode(PREFIX))
-    .then<Readonly<BubbName[]>>(() => conv({ dir, tail }))
-    .then((bnames: Readonly<BubbName[]>): Readonly<[Role, string]>[] =>
+    .then<ReadonlyArray<BubbName>>(() => conv({ dir, tail }))
+    .then((bnames: ReadonlyArray<BubbName>): Readonly<[Role, string]>[] =>
       bnames.map(({ meta: { role, path } }): Readonly<[Role, string]> => [
         role,
         Deno.readTextFileSync(path),

@@ -44,7 +44,7 @@ const dir = ".lepo";
 debug("dir:", dir);
 
 conv({ dir })
-  .then((bnames: Readonly<BubbName[]>): void => {
+  .then((bnames: ReadonlyArray<BubbName>): void => {
     debug(() => [
       "conv:",
       ...bnames.map(({ id, meta: { role, isHidden } }) =>

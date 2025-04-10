@@ -16,7 +16,7 @@ const NO_BUBB = Symbol();
 export const conv = ({ dir, tail }: {
   dir: string;
   tail?: string;
-}): Promise<Readonly<BubbName[]>> =>
+}): Promise<ReadonlyArray<BubbName>> =>
   Deno.stat(dir)
     .then(({ isDirectory }: Deno.FileInfo): void => {
       if (!isDirectory) {
@@ -26,7 +26,7 @@ export const conv = ({ dir, tail }: {
       }
     })
     .then(() => readBubbNames({ dir }))
-    .then<Readonly<BubbName[]>>(async (names: AsyncGenerator<BubbName>) => {
+    .then<ReadonlyArray<BubbName>>(async (names: AsyncGenerator<BubbName>) => {
       const arr: BubbName[] = [];
       const map: Map<string, BubbMeta> = new Map();
 
@@ -79,7 +79,7 @@ export const conv = ({ dir, tail }: {
 
 if (import.meta.main) {
   conv({ dir: ".lepo" })
-    .then((bnames: Readonly<BubbName[]>): void => {
+    .then((bnames: ReadonlyArray<BubbName>): void => {
       console.info("bnames:", bnames);
     })
     .catch((e): void => {

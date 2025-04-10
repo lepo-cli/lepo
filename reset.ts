@@ -5,11 +5,11 @@ const td = new TextDecoder();
 
 const ls = new Deno.Command("git", { args: ["ls-files"] });
 
-const few = (now: number): Readonly<{
+const few = (now: number): ReadonlyArray<{
   readonly id: string;
   readonly flag: string;
   readonly text: string;
-}[]> => [
+}> => [
   {
     id: ulid(now - 4),
     flag: "u1",

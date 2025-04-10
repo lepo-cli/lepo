@@ -11,10 +11,10 @@ export type ExecRes = {
 
 export type ExecReq = {
   readonly cmd: string;
-  readonly args: Readonly<string[]>;
+  readonly args: ReadonlyArray<string>;
 };
 
-export const convert = (text: string): Readonly<ExecReq[]> => {
+export const convert = (text: string): ReadonlyArray<ExecReq> => {
   const p = (() => {
     try {
       return parse(`<model>${text}</model>`);
@@ -36,21 +36,22 @@ export const convert = (text: string): Readonly<ExecReq[]> => {
 
   return [execReq]
     .flat()
-    .filter((er: unknown) => er && typeof er === "object")
-    .map((er: unknown): object => er as object)
-    .filter((er: object) => typeof (er as { cmd: unknown }).cmd === "string")
-    .map((er: object): ExecReq => ({
-      cmd: (er as { cmd: string }).cmd,
-      args: Array.isArray((er as { args: unknown }).args)
+    .filter((er: unknown): er is { cmd: string; args: unknown } =>
+      (er as boolean) &&
+      typeof er === "object" &&
+      typeof (er as { cmd: unknown }).cmd === "string"
+    )
+    .map(({ cmd, args }: { cmd: string; args: unknown }): ExecReq => ({
+      cmd,
+      args: !args
         ? []
-        : !(er as { args: unknown }).args
+        : Array.isArray(args)
         ? []
-        : typeof (er as { args: unknown }).args !== "object"
+        : typeof args !== "object"
         ? []
-        : [(er as { args: { arg: unknown } }).args.arg]
+        : [(args as { arg: unknown }).arg]
           .flat()
-          .filter((a: unknown) => typeof a === "string")
-          .map((a: unknown): string => a as string),
+          .filter((a: unknown): a is string => typeof a === "string"),
     }));
 };
 

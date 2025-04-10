@@ -26,14 +26,14 @@ export const loop = ({ dir, prev }: {
   prev: string;
 }): Promise<string> =>
   bubb({ dir, id: prev })
-    .then((name?: BubbName): Readonly<ExecReq[]> => {
+    .then((name?: BubbName): ReadonlyArray<ExecReq> => {
       if (!name) throw new NotFound(`bubb#${prev} not found`);
 
       return name.meta.role === "lepo"
         ? convert(Deno.readTextFileSync(name.meta.path))
         : [];
     })
-    .then((execs: Readonly<ExecReq[]>): Readonly<ExecRes[]> => {
+    .then((execs: ReadonlyArray<ExecReq>): ReadonlyArray<ExecRes> => {
       const execRess: ExecRes[] = [];
 
       for (const { cmd, args } of execs) {
@@ -82,10 +82,10 @@ export const loop = ({ dir, prev }: {
 
       return execRess;
     })
-    .then((execRess: Readonly<ExecRes[]>): Readonly<string[]> =>
+    .then((execRess: ReadonlyArray<ExecRes>): ReadonlyArray<string> =>
       execRess.map((execRes) => stringify({ ["execution-response"]: execRes }))
     )
-    .then<string>((texts: Readonly<string[]>) => {
+    .then<string>((texts: ReadonlyArray<string>) => {
       if (texts.length === 0) {
         throw END;
       } else {
