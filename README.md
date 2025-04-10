@@ -14,6 +14,5 @@ Lepo stands for "Llm tool for rEPOsitory"
 - [x] MVP
 - [ ] CLI 사용성 구현
 - [ ] executable 패키징
-- [ ] cd 옵션을 위한 래핑
 - [ ] Nix (Flake) 로 패키징
 - [ ] 문서화
