@@ -1,4 +1,5 @@
 import { stringify } from "@libs/xml/stringify";
+import { join } from "@std/path/join";
 import { ulid } from "@std/ulid/ulid";
 
 const td = new TextDecoder();
@@ -65,7 +66,7 @@ export const reset = ({ dir, now }: {
       text,
     ])
     .forEach(([name, text]: Readonly<[string, string]>): void => {
-      Deno.writeTextFileSync(`${dir}/${name}.txt`, text);
+      Deno.writeTextFileSync(join(dir, `${name}.txt`), text);
     });
 };
 

@@ -1,3 +1,5 @@
+import { join } from "@std/path/join";
+
 export type Role = "user" | "lepo" | "meta";
 
 export type BubbMeta = {
@@ -53,7 +55,7 @@ export async function* readBubbNames({ dir }: {
     // id 는 ulid 형식이어야 함
     if (!ULID_REGEX.test(id)) continue;
 
-    const path = `${dir}/${name}`;
+    const path = join(dir, name);
 
     // head 분기
     if (prevtxt === "nil.txt") {
@@ -96,7 +98,7 @@ export const bubb = ({ dir, id: i }: {
           arr.push({ id, meta: { prev, role, isHidden, path } });
         }
 
-        if (i === id) break;
+        if (id === i) break;
       }
 
       return i

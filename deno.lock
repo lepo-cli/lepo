@@ -5,6 +5,7 @@
     "jsr:@std/bytes@^1.0.5": "1.0.5",
     "jsr:@std/cli@1.0.15": "1.0.15",
     "jsr:@std/io@0.225.2": "0.225.2",
+    "jsr:@std/path@1.0.8": "1.0.8",
     "jsr:@std/ulid@1.0.0": "1.0.0",
     "npm:@google/genai@0.7.0": "0.7.0"
   },
@@ -23,6 +24,9 @@
       "dependencies": [
         "jsr:@std/bytes"
       ]
+    },
+    "@std/path@1.0.8": {
+      "integrity": "548fa456bb6a04d3c1a1e7477986b6cffbce95102d0bb447c67c4ee70e0364be"
     },
     "@std/ulid@1.0.0": {
       "integrity": "d41c3d27a907714413649fee864b7cde8d42ee68437d22b79d5de4f81d808780"
@@ -170,6 +174,7 @@
       "jsr:@libs/xml@6.0.4",
       "jsr:@std/cli@1.0.15",
       "jsr:@std/io@0.225.2",
+      "jsr:@std/path@1.0.8",
       "jsr:@std/ulid@1.0.0",
       "npm:@google/genai@0.7.0"
     ]

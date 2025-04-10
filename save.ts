@@ -1,6 +1,7 @@
 import type { BubbName, Role } from "./bubb.ts";
 import { bubb } from "./bubb.ts";
 
+import { join } from "@std/path/join";
 import { ulid } from "@std/ulid/ulid";
 
 class NotFound extends Error {
@@ -20,10 +21,10 @@ export const save = ({ dir, prev, role, isHidden, text }: {
       return ulid();
     })
     .then<string>((curr: string) =>
-      // TODO: path 라이브러리 쓰기
-      Deno.writeTextFile(
-        `${dir}/${curr}-${role.charAt(0)}${isHidden ? "1" : "0"}-${prev}.txt`,
-        text,
-      )
+      Promise
+        .resolve(`${curr}-${role.charAt(0)}${isHidden ? "1" : "0"}-${prev}`)
+        .then<void>((name: string) =>
+          Deno.writeTextFile(join(dir, `${name}.txt`), text)
+        )
         .then((): string => curr)
     );
