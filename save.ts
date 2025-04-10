@@ -4,6 +4,8 @@ import { bubb } from "./bubb.ts";
 import { join } from "@std/path/join";
 import { ulid } from "@std/ulid/ulid";
 
+const te = new TextEncoder();
+
 class NotFound extends Error {
   override name = "NotFound";
 }
@@ -17,14 +19,23 @@ export const save = ({ dir, prev, role, isHidden, text }: {
 }): Promise<string> =>
   bubb({ dir, id: prev })
     .then((name?: BubbName): string => {
-      if (!name) throw new NotFound(`bubb#${prev} not found`);
-      return ulid();
+      if (name) return ulid();
+      else throw new NotFound(`bubb#${prev} not found`);
     })
     .then<string>((curr: string) =>
       Promise
         .resolve(`${curr}-${role.charAt(0)}${isHidden ? "1" : "0"}-${prev}`)
-        .then<void>((name: string) =>
-          Deno.writeTextFile(join(dir, `${name}.txt`), text)
+        .then((name: string): string => join(dir, `${name}.txt`))
+        .then((path: string) =>
+          Deno.writeTextFile(path, text).then(() =>
+            Deno.stdout.write(
+              te.encode(
+                `  [ \x1b[32m${
+                  curr.substring(curr.length - 4).toLowerCase()
+                }\x1b[0m ] \x1b[90m${path}\x1b[0m`,
+              ),
+            )
+          )
         )
         .then((): string => curr)
     );

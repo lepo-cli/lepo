@@ -52,10 +52,15 @@ conv({ dir })
       ),
     ]);
 
-    for (const { meta: { role, isHidden, path } } of bnames) {
+    for (const { id, meta: { role, isHidden, path } } of bnames) {
       if (isHidden) continue;
       Deno.stdout.writeSync(te.encode(prefix.get(role)));
       Deno.stdout.writeSync(Deno.readFileSync(path));
+      Deno.stdout.writeSync(te.encode(
+        `  [ \x1b[32m${
+          id.substring(id.length - 4).toLowerCase()
+        }\x1b[0m ] \x1b[90m${path}\x1b[0m`,
+      ));
     }
   })
   .then<BubbName | undefined>(() => bubb({ dir }))
