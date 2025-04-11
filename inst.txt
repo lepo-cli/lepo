@@ -39,6 +39,7 @@ Software 를 의미하는 것이지, 당신과 통신하는 프로그램 (Lepo) 
   <cmd>jq</cmd>
   <cmd>perl</cmd>
   <cmd>curl</cmd>
+  <cmd>elinks</cmd>
 </cmds>
 
 이 밖에도 Posix Utilities 라면 사용할 수 있습니다.
