@@ -19,11 +19,7 @@ export const conv = ({ dir, tail }: {
 }): Promise<ReadonlyArray<BubbName>> =>
   Deno.stat(dir)
     .then(({ isDirectory }: Deno.FileInfo): void => {
-      if (!isDirectory) {
-        throw new Conflict(
-          `"${dir}" conflicts. check out --save-to options to address it.`,
-        );
-      }
+      if (!isDirectory) throw new Conflict(`"${dir}" conflicts`);
     })
     .then(() => readBubbNames({ dir }))
     .then<ReadonlyArray<BubbName>>(async (names: AsyncGenerator<BubbName>) => {

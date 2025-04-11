@@ -80,11 +80,7 @@ export const bubb = ({ dir, id: i }: {
 }): Promise<BubbName | undefined> =>
   Deno.stat(dir)
     .then(({ isDirectory }: Deno.FileInfo): void => {
-      if (!isDirectory) {
-        throw new Conflict(
-          `"${dir}" conflicts. check out --save-to options to address it.`,
-        );
-      }
+      if (!isDirectory) throw new Conflict(`"${dir}" conflicts`);
     })
     .then(() => readBubbNames({ dir }))
     .then<BubbName | undefined>(async (names: AsyncGenerator<BubbName>) => {
