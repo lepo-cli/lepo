@@ -8,9 +8,6 @@ lepo new       : 새로운 대화를 시작 (과거 사용이 없어도 됨)
 lepo ls        : 모든 지난 bubb 들의 id 와 그 내용 일부를 보여줌
 lepo -- XXXX   : XXXX 부터 진행 (XXXX 포함)
 lepo cat XXXX  : XXXX 의 내용 출력 (id 를 생략하면 최근 user bubb 으로 대체)
-lepo edit XXXX : XXXX 의 내용을 수정하기 위해 VISUAL 을 실행. VISUAL 환경 변수의
-                 값이 없다면 EDITOR, 그것도 없다면 vim > vi > nano 로 fallback.
-                 (id 를 생략하면 최근 user bubb 으로 대체)
 
 
 대화 도중 사용 가능한 예약어 목록
@@ -21,3 +18,4 @@ regen           : 응답을 다시 생성하게 하기
 undo            : 직전의 내 bubb 을 다시 작성하기
 goto XXXX       : XXXX 저장 직후 시점으로 가기
 ls              : 현재 conv 의 모든 지난 bubb 들의 id 와 그 내용 일부를 보여줌
+:!<cmd> [args]  : cmd 를 실행
