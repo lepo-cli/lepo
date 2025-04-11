@@ -8,19 +8,12 @@ import { PREFIX as META } from "./meta.ts";
 import { BYE, PREFIX as USER, user } from "./user.ts";
 import { save } from "./save.ts";
 
-import { stringify } from "@libs/xml/stringify";
-
 const loop = ({ dir, prev }: { dir: string; prev: string }): Promise<string> =>
   execLoop({ dir, prev })
-    .catch((e) => {
+    .catch((e): void => {
       if (e !== EXEC_LOOP_END) throw e;
     })
-    .then(() => user())
-    .then((query: string): string => {
-      const text = stringify({ ["plain-text"]: query });
-      debug("text:", text);
-      return text;
-    })
+    .then<string>(user)
     .then<string>((text: string) => save({ dir, prev, role: "user", text }))
     .then<string>((id: string) =>
       lepo({ dir, tail: id }).then<string>((text: string) =>
