@@ -10,6 +10,7 @@
   },
   "tasks": {
     "check": "deno check **/*.ts && deno lint && deno fmt --check",
+    // DEV=1 env --file=.env.local nix develop --command deno task main
     "main": "deno run --allow-all main.ts",
     "reset": "deno run --allow-write reset.ts"
   }
