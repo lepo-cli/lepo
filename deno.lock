@@ -3,11 +3,11 @@
   "specifiers": {
     "jsr:@libs/xml@6.0.4": "6.0.4",
     "jsr:@std/bytes@^1.0.5": "1.0.5",
-    "jsr:@std/cli@1.0.15": "1.0.15",
+    "jsr:@std/cli@1.0.16": "1.0.16",
     "jsr:@std/io@0.225.2": "0.225.2",
     "jsr:@std/path@1.0.8": "1.0.8",
     "jsr:@std/ulid@1.0.0": "1.0.0",
-    "npm:@google/genai@0.7.0": "0.7.0"
+    "npm:@google/genai@0.8.0": "0.8.0"
   },
   "jsr": {
     "@libs/xml@6.0.4": {
@@ -16,8 +16,8 @@
     "@std/bytes@1.0.5": {
       "integrity": "4465dd739d7963d964c809202ebea6d5c6b8e3829ef25c6a224290fbb8a1021e"
     },
-    "@std/cli@1.0.15": {
-      "integrity": "e79ba3272ec710ca44d8342a7688e6288b0b88802703f3264184b52893d5e93f"
+    "@std/cli@1.0.16": {
+      "integrity": "02df293099c35b9e97d8ca05f57f54bd1ee08134f25d19a4756b3924695f4b00"
     },
     "@std/io@0.225.2": {
       "integrity": "3c740cd4ee4c082e6cfc86458f47e2ab7cb353dc6234d5e9b1f91a2de5f4d6c7",
@@ -33,8 +33,8 @@
     }
   },
   "npm": {
-    "@google/genai@0.7.0": {
-      "integrity": "sha512-r+Fwj/emnXZN5R+4JCxDXboY4AGTmTn7+Wnori5dgyJiStP0P82f9YYL0CVsCnDIumNY2i0UIcZ1zGZdtHJ34w==",
+    "@google/genai@0.8.0": {
+      "integrity": "sha512-Zs+OGyZKyMbFofGJTR9/jTQSv8kITh735N3tEuIZj4VlMQXTC0soCFahysJ9NaeenRlD7xGb6fyqmX+FwrpU6Q==",
       "dependencies": [
         "google-auth-library",
         "ws"
@@ -46,8 +46,8 @@
     "base64-js@1.5.1": {
       "integrity": "sha512-AKpaYlHn8t4SVbOHCy+b5+KKgvR4vrsD8vbvrbiQJps7fKDTkjkDry6ji0rUJjC0kzbNePLwzxq8iypo41qeWA=="
     },
-    "bignumber.js@9.1.2": {
-      "integrity": "sha512-2/mKyZH9K85bzOEfhXDBFZTGd1CTs+5IHpeFQo9luiBG7hghdC851Pj2WAhb6E3R6b9tZj/XKhbg4fum+Kepug=="
+    "bignumber.js@9.2.1": {
+      "integrity": "sha512-+NzaKgOUvInq9TIUZ1+DRspzf/HApkCwD4btfuasFTdrfnOxqx853TgDpMolp+uv4RpRp7bPcEU2zKr9+fRmyw=="
     },
     "buffer-equal-constant-time@1.0.1": {
       "integrity": "sha512-zRpUiDwd/xk6ADqPMATG8vc9VPrkck7T07OIx0gnjmJAnHnTVXNQG3vfvWNuiZIkwu9KrKdA1iJKfsfTVxE6NA=="
@@ -172,11 +172,11 @@
   "workspace": {
     "dependencies": [
       "jsr:@libs/xml@6.0.4",
-      "jsr:@std/cli@1.0.15",
+      "jsr:@std/cli@1.0.16",
       "jsr:@std/io@0.225.2",
       "jsr:@std/path@1.0.8",
       "jsr:@std/ulid@1.0.0",
-      "npm:@google/genai@0.7.0"
+      "npm:@google/genai@0.8.0"
     ]
   }
 }
