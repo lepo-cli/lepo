@@ -11,7 +11,7 @@ export const PREFIX = "\n\x1b[33m>>> LEPO:\x1b[0m ";
 const te = new TextEncoder();
 const td = new TextDecoder();
 
-const ai = new GoogleGenAI({ apiKey: Deno.env.get("API_KEY") });
+const ai = new GoogleGenAI({ apiKey: Deno.env.get("GEMINI_API_KEY") });
 const MODEL = "gemini-2.0-flash-lite";
 debug("MODEL:", MODEL);
 
