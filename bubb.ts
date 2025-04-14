@@ -102,14 +102,3 @@ export const bubb = ({ dir, id: i }: {
         : arr
           .toSorted(({ id: a }, { id: b }) => b.localeCompare(a, "en-US"))[0];
     });
-
-if (import.meta.main) {
-  bubb({ dir: ".lepo" })
-    .then((bname): void => {
-      console.info("bname:", bname);
-    })
-    .catch((e): void => {
-      console.error(e);
-      Deno.exit(1);
-    });
-}

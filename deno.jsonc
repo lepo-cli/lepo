@@ -10,8 +10,8 @@
   },
   "tasks": {
     "check": "deno check **/*.ts && deno lint && deno fmt --check",
-    "reset": "deno run --allow-write reset.ts",
-    "dev": "DEV=1 deno run --env-file=.env.local --allow-read --allow-write --allow-net --allow-env --allow-run main.ts",
-    "comp": "deno compile --include inst.txt --include help.txt --allow-read --allow-write --allow-net --allow-env --allow-run --output build/lepo main.ts"
+    "test": "deno test --allow-read --allow-write --allow-env --allow-run",
+    "compile": "deno compile --include inst.txt --include help.txt --allow-read --allow-write --allow-net --allow-env --allow-run --output lepo main.ts",
+    "dev": "DEV=1 deno run --env-file=.env.local --allow-read --allow-write --allow-net --allow-env --allow-run main.ts"
   }
 }

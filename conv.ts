@@ -72,14 +72,3 @@ export const conv = ({ dir, tail }: {
         throw e;
       }
     });
-
-if (import.meta.main) {
-  conv({ dir: ".lepo" })
-    .then((bnames: ReadonlyArray<BubbName>): void => {
-      console.info("bnames:", bnames);
-    })
-    .catch((e): void => {
-      console.error(e);
-      Deno.exit(1);
-    });
-}

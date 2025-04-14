@@ -69,12 +69,3 @@ export const reset = ({ dir, now }: {
       Deno.writeTextFileSync(join(dir, `${name}.txt`), text);
     });
 };
-
-if (import.meta.main) {
-  try {
-    reset({ dir: ".lepo" });
-  } catch (e) {
-    console.error(e);
-    Deno.exit(1);
-  }
-}

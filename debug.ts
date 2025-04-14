@@ -34,28 +34,3 @@ export const debug: (...whatever: unknown[]) => void = Deno.env.get("DEV")
       });
   }
   : () => undefined;
-
-if (import.meta.main) {
-  console.info("DEV:", Deno.env.get("DEV"));
-
-  debug("lite");
-  debug();
-  debug("lite:", "stuff");
-  debug("lite:", "a", "b");
-  debug(["a", "b"]);
-  debug("arr:", ["a", "b"]);
-  debug("a b:", ...["a", "b"]);
-  debug(() => "heavy");
-  debug(() => ["heavy:", "stuff"]);
-  debug(() => ["heavy:", "a", "b"]);
-  debug(() => Promise.resolve("async"));
-  debug(() => Promise.all(["async:", Promise.resolve("stuff")]));
-  debug(() =>
-    Promise.all(["async:", Promise.resolve("a"), Promise.resolve("b")])
-  );
-  debug(() => {}, "<- function it self for some reason");
-
-  setTimeout(() => {
-    console.info("debug test end");
-  });
-}
