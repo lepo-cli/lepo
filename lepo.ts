@@ -3,6 +3,7 @@ import type { BubbName, Role } from "./bubb.ts";
 import { conv } from "./conv.ts";
 
 import { stringify } from "@libs/xml/stringify";
+import { join } from "@std/path/join";
 import type { Content, GenerateContentResponse } from "@google/genai";
 import { GoogleGenAI } from "@google/genai";
 
@@ -11,7 +12,14 @@ export const PREFIX = "\n\x1b[33m>>> LEPO:\x1b[0m ";
 const te = new TextEncoder();
 const td = new TextDecoder();
 
-const ai = new GoogleGenAI({ apiKey: Deno.env.get("GEMINI_API_KEY") });
+const apiKey = Deno.env.get("GEMINI_API_KEY");
+
+if (!apiKey) {
+  console.error("GEMINI_API_KEY not set");
+  Deno.exit(1);
+}
+
+const ai = new GoogleGenAI({ apiKey });
 const MODEL = "gemini-2.0-flash-lite";
 debug("MODEL:", MODEL);
 
@@ -21,7 +29,7 @@ const encode = (str: string): string => {
 };
 
 const instTmpl: string = Deno
-  .readTextFileSync(new URL("inst.txt", import.meta.url));
+  .readTextFileSync(join(import.meta.dirname as string, "inst.txt"));
 
 const inst: string = instTmpl.replaceAll(
   "{{wd}}",
