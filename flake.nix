@@ -13,6 +13,14 @@
         devShells.default = pkgs.mkShell {
           buildInputs = [
             pkgs.deno
+            pkgs.fd
+            pkgs.ripgrep
+            pkgs.perl
+            pkgs.jq
+            pkgs.git
+            pkgs.curl
+            pkgs.elinks
+            pkgs.repomix
           ];
         };
       });
