@@ -1,3 +1,4 @@
+build
 .env.local
 .lepo
 repomix-output.xml
