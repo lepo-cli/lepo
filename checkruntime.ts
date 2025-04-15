@@ -4,9 +4,9 @@ export const CMDS = [
   "perl",
   "jq",
   "git",
+  "ssh",
   "curl",
   "elinks",
-  "repomix",
 ] as const;
 
 export const checkruntime = (): Promise<void> =>

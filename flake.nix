@@ -18,9 +18,9 @@
             pkgs.perl
             pkgs.jq
             pkgs.git
+            pkgs.openssh
             pkgs.curl
             pkgs.elinks
-            pkgs.repomix
           ];
         };
       });
