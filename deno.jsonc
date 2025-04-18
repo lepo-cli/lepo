@@ -7,7 +7,7 @@
     "dev": "DEV=1 deno run --env-file=.env.local --allow-read --allow-write --allow-net --allow-env --allow-run main.ts"
   },
   "exclude": [
-    "testspace",
+    "_lepo_testspace_",
     "flake.nix",
     "flake.lock"
   ]

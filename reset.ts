@@ -1,10 +1,5 @@
-import { stringify } from "jsr:@libs/xml/stringify";
 import { join } from "jsr:@std/path/join";
 import { ulid } from "jsr:@std/ulid/ulid";
-
-const td = new TextDecoder();
-
-const ls = new Deno.Command("git", { args: ["ls-files"] });
 
 const few = (now: number): ReadonlyArray<{
   readonly id: string;
@@ -12,34 +7,9 @@ const few = (now: number): ReadonlyArray<{
   readonly text: string;
 }> => [
   {
-    id: ulid(now - 4),
-    flag: "u1",
-    text: "예열해.",
-  },
-  {
-    id: ulid(now - 3),
-    flag: "l1",
-    text: "응. 그럼 추적 중인 파일을 한 번 볼게.\n" + stringify({
-      ["execution-request"]: {
-        cmd: "git",
-        args: [{ arg: "ls-files" }],
-        description: "저장소를 구성하는 파일을 조회하는 명령",
-      },
-    }),
-  },
-  {
-    id: ulid(now - 2),
-    flag: "u1",
-    text: stringify({
-      ["execution-response"]: {
-        stdout: td.decode(ls.outputSync().stdout),
-      },
-    }),
-  },
-  {
     id: ulid(now - 1),
-    flag: "l1",
-    text: "여기에서 어떤 도움이 필요해?",
+    flag: "l0",
+    text: "안녕! 어떤 도움이 필요해?",
   },
 ];
 

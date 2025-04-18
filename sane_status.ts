@@ -20,18 +20,18 @@ export type SaneStatus = {
 
 const td = new TextDecoder();
 
-export const saneStatus = (cwd: string): SaneStatus => {
+export const saneStatus = (wd: string): SaneStatus => {
   const repoPaths: string[] = [];
 
-  outer: for (const { name, isDirectory } of Deno.readDirSync(cwd)) {
+  outer: for (const { name, isDirectory } of Deno.readDirSync(wd)) {
     if (!isDirectory) continue;
 
     if (name === ".git") {
-      repoPaths.push(join(cwd, "."));
+      repoPaths.push(join(wd, "."));
       continue;
     }
 
-    const child = join(cwd, name);
+    const child = join(wd, name);
 
     for (const { name: nm, isDirectory: isDir } of Deno.readDirSync(child)) {
       if (!isDir) continue;
@@ -106,7 +106,7 @@ export const saneStatus = (cwd: string): SaneStatus => {
       "2",
       "--absolute-path",
       ".*",
-      cwd,
+      wd,
     ],
   }).outputSync();
 
@@ -116,7 +116,7 @@ export const saneStatus = (cwd: string): SaneStatus => {
     ["git-repositories"]: { ["git-repository"]: gitRepos },
     ["current-files"]: {
       command:
-        `fd --unrestricted --exclude '**/.git/*' --max-depth 2 --absolute-path '.*' "${cwd}"`,
+        `fd --unrestricted --exclude '**/.git/*' --max-depth 2 --absolute-path '.*' "${wd}"`,
       output: td.decode(stdout),
     },
   };

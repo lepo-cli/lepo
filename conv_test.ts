@@ -12,7 +12,11 @@ Deno.test({
     env: ["DEV"],
   },
   fn: () => {
-    const testdir = join(import.meta.dirname as string, "testspace", "conv");
+    const testdir = join(
+      import.meta.dirname as string,
+      "_lepo_testspace_",
+      "conv",
+    );
     Deno.mkdirSync(testdir, { recursive: true });
     Deno.removeSync(testdir, { recursive: true });
     return conv({ dir: testdir })

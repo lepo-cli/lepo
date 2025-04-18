@@ -12,7 +12,11 @@ Deno.test({
     run: true,
   },
   fn: () => {
-    const testdir = join(import.meta.dirname as string, "testspace", "bubb-1");
+    const testdir = join(
+      import.meta.dirname as string,
+      "_lepo_testspace_",
+      "bubb-1",
+    );
     Deno.mkdirSync(testdir, { recursive: true });
     Deno.removeSync(testdir, { recursive: true });
     return bubb({ dir: testdir })
@@ -35,7 +39,11 @@ Deno.test({
     run: true,
   },
   fn: () => {
-    const testdir = join(import.meta.dirname as string, "testspace", "bubb-2");
+    const testdir = join(
+      import.meta.dirname as string,
+      "_lepo_testspace_",
+      "bubb-2",
+    );
     Deno.mkdirSync(testdir, { recursive: true });
     Deno.removeSync(testdir, { recursive: true });
     try {

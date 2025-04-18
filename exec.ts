@@ -20,8 +20,9 @@ export const END = Symbol();
 const pretty = ({ cmd, args }: ExecReq): string =>
   `\x1b[32m${cmd}\x1b[0m ${args.join("\x1b[32m,\x1b[0m ")}\n`;
 
-export const loop = ({ dir, prev }: {
+export const loop = ({ dir, inst, prev }: {
   dir: string;
+  inst: string;
   prev: string;
 }): Promise<string> =>
   bubb({ dir, id: prev })
@@ -93,10 +94,10 @@ export const loop = ({ dir, prev }: {
         debug("text:", text);
 
         return save({ dir, prev, role: "user", text }).then((id: string) =>
-          lepo({ dir, tail: id }).then((text: string) =>
+          lepo({ dir, inst, tail: id }).then((text: string) =>
             save({ dir, prev: id, role: "lepo", text })
           )
         );
       }
     })
-    .then<string>((id: string) => loop({ dir, prev: id }));
+    .then<string>((id: string) => loop({ dir, inst, prev: id }));

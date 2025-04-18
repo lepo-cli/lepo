@@ -37,7 +37,7 @@ Deno.test({
   fn: () => {
     const testdir = join(
       import.meta.dirname as string,
-      "testspace",
+      "_lepo_testspace_",
       "sane_status",
     );
 

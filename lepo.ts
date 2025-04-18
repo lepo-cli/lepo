@@ -1,15 +1,12 @@
 import { debug } from "./debug.ts";
 import type { BubbName, Role } from "./bubb.ts";
 import { conv } from "./conv.ts";
-import { stringify } from "jsr:@libs/xml/stringify";
-import { join } from "jsr:@std/path/join";
 import type { Content, GenerateContentResponse } from "npm:@google/genai";
 import { GoogleGenAI } from "npm:@google/genai";
 
 export const PREFIX = "\n\x1b[33m>>> LEPO:\x1b[0m ";
 
 const te = new TextEncoder();
-const td = new TextDecoder();
 
 const apiKey = Deno.env.get("GEMINI_API_KEY");
 
@@ -22,23 +19,9 @@ const ai = new GoogleGenAI({ apiKey });
 const MODEL = "gemini-2.0-flash-lite";
 debug("MODEL:", MODEL);
 
-const encode = (str: string): string => {
-  const wrapped = stringify({ str });
-  return wrapped.substring(5, wrapped.length - 6);
-};
-
-const instTmpl: string = Deno
-  .readTextFileSync(join(import.meta.dirname as string, "inst.txt"));
-
-const inst: string = instTmpl.replaceAll(
-  "{{wd}}",
-  encode(td.decode(new Deno.Command("pwd").outputSync().stdout).trim()),
-);
-
-debug(() => ["inst:", inst.substring(0, 30) + "\x1b[90m...\x1b[0m"]);
-
-export const lepo = ({ dir, tail }: {
+export const lepo = ({ dir, inst, tail }: {
   dir: string;
+  inst: string;
   tail: string;
 }): Promise<string> =>
   Deno.stdout.write(te.encode(PREFIX))
