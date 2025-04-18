@@ -1,5 +1,5 @@
 import { convert } from "./protocol.ts";
-import { assertEquals } from "jsr:@std/assert@1.0.12";
+import { assertEquals } from "jsr:@std/assert";
 
 Deno.test("convert", () => {
   const empty = "";
