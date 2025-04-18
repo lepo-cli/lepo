@@ -17,12 +17,12 @@ export const checkruntime = (): Promise<void> =>
       )
       .map((command) => command.output()),
   )
-    .then((outs: Deno.CommandOutput[]): void => {
-      const na: string[] = [];
+    .then((outs: ReadonlyArray<Deno.CommandOutput>): void => {
+      const arr: string[] = [];
       for (let i = 0; i < CMDS.length; ++i) {
-        if (!outs[i].success) na.push(CMDS[i]);
+        if (!outs[i].success) arr.push(CMDS[i]);
       }
-      if (na.length > 0) {
-        throw new Error(`command ${na.join(", ")} not found`);
+      if (arr.length > 0) {
+        throw new Error(`command ${arr.join(", ")} not found`);
       }
     });
