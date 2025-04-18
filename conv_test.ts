@@ -1,9 +1,7 @@
-import { assert } from "jsr:@std/assert@1.0.12";
-
 import type { BubbName } from "./bubb.ts";
 import { conv } from "./conv.ts";
-
-import { join } from "@std/path/join";
+import { assert } from "jsr:@std/assert";
+import { join } from "jsr:@std/path/join";
 
 Deno.test({
   name: "conv",

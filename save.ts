@@ -1,8 +1,7 @@
 import type { BubbName, Role } from "./bubb.ts";
 import { bubb } from "./bubb.ts";
-
-import { join } from "@std/path/join";
-import { ulid } from "@std/ulid/ulid";
+import { join } from "jsr:@std/path/join";
+import { ulid } from "jsr:@std/ulid/ulid";
 
 const te = new TextEncoder();
 

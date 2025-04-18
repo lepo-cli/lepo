@@ -1,8 +1,6 @@
-import { assert } from "jsr:@std/assert@1.0.12";
-
 import { reset } from "./reset.ts";
-
-import { join } from "@std/path/join";
+import { assert } from "jsr:@std/assert";
+import { join } from "jsr:@std/path/join";
 
 Deno.test({
   name: "reset",

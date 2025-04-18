@@ -1,10 +1,8 @@
-import { assert, fail } from "jsr:@std/assert@1.0.12";
-
 import type { BubbName } from "./bubb.ts";
 import { bubb } from "./bubb.ts";
 import { reset } from "./reset.ts";
-
-import { join } from "@std/path/join";
+import { assert, fail } from "jsr:@std/assert";
+import { join } from "jsr:@std/path/join";
 
 Deno.test({
   name: "bubb 없으면 에러 남",

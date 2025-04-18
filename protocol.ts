@@ -1,4 +1,4 @@
-import { parse } from "@libs/xml/parse";
+import { parse } from "jsr:@libs/xml/parse";
 
 const NIL = Symbol();
 

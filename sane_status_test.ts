@@ -1,8 +1,6 @@
-import { assert, assertEquals, assertFalse } from "jsr:@std/assert@1.0.12";
-
 import { saneStatus } from "./sane_status.ts";
-
-import { join } from "@std/path/join";
+import { assert, assertEquals, assertFalse } from "jsr:@std/assert";
+import { join } from "jsr:@std/path/join";
 
 const BATCH = `
 echo 'repo_1
@@ -51,12 +49,9 @@ Deno.test({
       Deno.chdir(testdir);
       assertEquals(Deno.cwd(), testdir);
 
-      {
-        assert(
-          new Deno.Command("bash", { args: ["-c", BATCH] })
-            .outputSync().success,
-        );
-      }
+      assert(
+        new Deno.Command("bash", { args: ["-c", BATCH] }).outputSync().success,
+      );
 
       const {
         ["git-repositories"]: { ["git-repository"]: [r0, r1, na] },

@@ -1,4 +1,4 @@
-import { readAllSync } from "@std/io/read-all";
+import { readAllSync } from "jsr:@std/io/read-all";
 
 export const PREFIX = "\n\x1b[36m<<< USER:\x1b[0m ";
 

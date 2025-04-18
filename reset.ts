@@ -1,6 +1,6 @@
-import { stringify } from "@libs/xml/stringify";
-import { join } from "@std/path/join";
-import { ulid } from "@std/ulid/ulid";
+import { stringify } from "jsr:@libs/xml/stringify";
+import { join } from "jsr:@std/path/join";
+import { ulid } from "jsr:@std/ulid/ulid";
 
 const td = new TextDecoder();
 

@@ -1,4 +1,4 @@
-import { join } from "@std/path/join";
+import { join } from "jsr:@std/path/join";
 
 export type Exec = {
   readonly command: string;

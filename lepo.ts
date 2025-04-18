@@ -1,11 +1,10 @@
 import { debug } from "./debug.ts";
 import type { BubbName, Role } from "./bubb.ts";
 import { conv } from "./conv.ts";
-
-import { stringify } from "@libs/xml/stringify";
-import { join } from "@std/path/join";
-import type { Content, GenerateContentResponse } from "@google/genai";
-import { GoogleGenAI } from "@google/genai";
+import { stringify } from "jsr:@libs/xml/stringify";
+import { join } from "jsr:@std/path/join";
+import type { Content, GenerateContentResponse } from "npm:@google/genai";
+import { GoogleGenAI } from "npm:@google/genai";
 
 export const PREFIX = "\n\x1b[33m>>> LEPO:\x1b[0m ";
 

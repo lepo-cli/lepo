@@ -6,8 +6,7 @@ import { convert } from "./protocol.ts";
 import { save } from "./save.ts";
 import { lepo } from "./lepo.ts";
 import { PREFIX as META } from "./meta.ts";
-
-import { stringify } from "@libs/xml/stringify";
+import { stringify } from "jsr:@libs/xml/stringify";
 
 class NotFound extends Error {
   override name = "NotFound";
