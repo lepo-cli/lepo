@@ -102,6 +102,8 @@ export const saneStatus = (wd: string): SaneStatus => {
       "--unrestricted",
       "--exclude",
       "**/.git/*",
+      "--exclude",
+      "**/.lepo/*",
       "--max-depth",
       "2",
       "--absolute-path",
@@ -116,7 +118,7 @@ export const saneStatus = (wd: string): SaneStatus => {
     ["git-repositories"]: { ["git-repository"]: gitRepos },
     ["current-files"]: {
       command:
-        `fd --unrestricted --exclude '**/.git/*' --max-depth 2 --absolute-path '.*' "${wd}"`,
+        `fd --unrestricted --exclude '**/.git/*' --exclude '**/.lepo/*' --max-depth 2 --absolute-path '.*' "${wd}"`,
       output: td.decode(stdout),
     },
   };
