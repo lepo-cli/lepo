@@ -14,10 +14,6 @@ export type BubbName = {
   readonly meta: BubbMeta;
 };
 
-class Conflict extends Error {
-  override name = "Conflict";
-}
-
 const ULID_REGEX = /^[0-9A-HJKMNP-TV-Z]{26}$/i;
 const NIL = Symbol();
 
@@ -80,7 +76,7 @@ export const bubb = ({ dir, id: i }: {
 }): Promise<BubbName | undefined> =>
   Deno.stat(dir)
     .then(({ isDirectory }: Deno.FileInfo): void => {
-      if (!isDirectory) throw new Conflict(`"${dir}" conflicts`);
+      if (!isDirectory) throw new Error(`"${dir}" conflicts`);
     })
     .then(() => readBubbNames({ dir }))
     .then<BubbName | undefined>(async (names: AsyncGenerator<BubbName>) => {

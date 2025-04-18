@@ -8,10 +8,6 @@ import { lepo } from "./lepo.ts";
 import { PREFIX as META } from "./meta.ts";
 import { stringify } from "jsr:@libs/xml/stringify";
 
-class NotFound extends Error {
-  override name = "NotFound";
-}
-
 const te = new TextEncoder();
 const td = new TextDecoder();
 
@@ -27,7 +23,7 @@ export const loop = ({ dir, inst, prev }: {
 }): Promise<string> =>
   bubb({ dir, id: prev })
     .then((name?: BubbName): ReadonlyArray<ExecReq> => {
-      if (!name) throw new NotFound(`bubb#${prev} not found`);
+      if (!name) throw new Error(`bubb#${prev} not found`);
 
       return name.meta.role === "lepo"
         ? convert(Deno.readTextFileSync(name.meta.path))

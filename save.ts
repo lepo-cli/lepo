@@ -5,10 +5,6 @@ import { ulid } from "jsr:@std/ulid/ulid";
 
 const te = new TextEncoder();
 
-class NotFound extends Error {
-  override name = "NotFound";
-}
-
 export const save = ({ dir, prev, role, isHidden, text }: {
   dir: string;
   prev: string;
@@ -19,7 +15,7 @@ export const save = ({ dir, prev, role, isHidden, text }: {
   bubb({ dir, id: prev })
     .then((name?: BubbName): string => {
       if (name) return ulid();
-      else throw new NotFound(`bubb#${prev} not found`);
+      else throw new Error(`bubb#${prev} not found`);
     })
     .then<string>((curr: string) =>
       Promise

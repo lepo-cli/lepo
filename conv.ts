@@ -3,14 +3,6 @@ import type { BubbMeta, BubbName } from "./bubb.ts";
 import { readBubbNames } from "./bubb.ts";
 import { reset } from "./reset.ts";
 
-class NotFound extends Error {
-  override name = "NotFound";
-}
-
-class Conflict extends Error {
-  override name = "Conflict";
-}
-
 const NO_BUBB = Symbol();
 
 export const conv = ({ dir, tail }: {
@@ -19,7 +11,7 @@ export const conv = ({ dir, tail }: {
 }): Promise<ReadonlyArray<BubbName>> =>
   Deno.stat(dir)
     .then(({ isDirectory }: Deno.FileInfo): void => {
-      if (!isDirectory) throw new Conflict(`"${dir}" conflicts`);
+      if (!isDirectory) throw new Error(`"${dir}" conflicts`);
     })
     .then(() => readBubbNames({ dir }))
     .then<ReadonlyArray<BubbName>>(async (names: AsyncGenerator<BubbName>) => {
@@ -43,7 +35,7 @@ export const conv = ({ dir, tail }: {
       const t = tail ?? sorted[sorted.length - 1].id;
 
       if (!map.has(t)) {
-        throw new NotFound(`bubb#${t} not found`);
+        throw new Error(`bubb#${t} not found`);
       }
 
       const c: BubbName[] = [];
