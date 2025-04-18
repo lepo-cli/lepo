@@ -3,6 +3,8 @@ import { assert } from "jsr:@std/assert@1.0.12";
 import type { BubbName } from "./bubb.ts";
 import { conv } from "./conv.ts";
 
+import { join } from "@std/path/join";
+
 Deno.test({
   name: "conv",
   permissions: {
@@ -12,7 +14,7 @@ Deno.test({
     env: ["DEV"],
   },
   fn: () => {
-    const testdir = ".lepo.conv.test";
+    const testdir = join(import.meta.dirname as string, "testspace", "conv");
     Deno.mkdirSync(testdir, { recursive: true });
     Deno.removeSync(testdir, { recursive: true });
     return conv({ dir: testdir })

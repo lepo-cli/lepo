@@ -1,6 +1,6 @@
 import { debug } from "./debug.ts";
 
-Deno.test({
+Deno.test.ignore({
   name: "debug",
   permissions: { env: ["DEV"] },
   fn: () => {

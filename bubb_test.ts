@@ -4,6 +4,8 @@ import type { BubbName } from "./bubb.ts";
 import { bubb } from "./bubb.ts";
 import { reset } from "./reset.ts";
 
+import { join } from "@std/path/join";
+
 Deno.test({
   name: "bubb 없으면 에러 남",
   permissions: {
@@ -12,7 +14,7 @@ Deno.test({
     run: true,
   },
   fn: () => {
-    const testdir = ".lepo.bubb.test.1";
+    const testdir = join(import.meta.dirname as string, "testspace", "bubb-1");
     Deno.mkdirSync(testdir, { recursive: true });
     Deno.removeSync(testdir, { recursive: true });
     return bubb({ dir: testdir })
@@ -35,7 +37,7 @@ Deno.test({
     run: true,
   },
   fn: () => {
-    const testdir = ".lepo.bubb.test.2";
+    const testdir = join(import.meta.dirname as string, "testspace", "bubb-2");
     Deno.mkdirSync(testdir, { recursive: true });
     Deno.removeSync(testdir, { recursive: true });
     try {

@@ -2,6 +2,8 @@ import { assert } from "jsr:@std/assert@1.0.12";
 
 import { reset } from "./reset.ts";
 
+import { join } from "@std/path/join";
+
 Deno.test({
   name: "reset",
   permissions: {
@@ -10,7 +12,7 @@ Deno.test({
     run: true,
   },
   fn: () => {
-    const testdir = ".lepo.reset.test";
+    const testdir = join(import.meta.dirname as string, "testspace", "reset");
     Deno.mkdirSync(testdir, { recursive: true });
     Deno.removeSync(testdir, { recursive: true });
     try {
