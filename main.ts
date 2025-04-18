@@ -10,6 +10,7 @@ import { save } from "./save.ts";
 import { findRoot, NOWHERE } from "./find_root.ts";
 import { saneStatus } from "./sane_status.ts";
 import { inst as construct } from "./inst.ts";
+import { checkRuntime } from "./check_runtime.ts";
 
 const loop = ({ dir, inst, prev }: {
   dir: string;
@@ -61,14 +62,7 @@ const wd: string = (() => {
   }
 })();
 
-const inst: string = construct({
-  initialDirectory,
-  wd,
-  cmds: ["fd", "rg", "perl", "jq", "git", "ssh", "curl", "elinks"],
-  saneStatus: saneStatus(wd),
-});
-
-debug("inst:", inst);
+const cmds = ["fd", "rg", "perl", "jq", "git", "ssh", "curl", "elinks"];
 
 Deno.chdir(wd);
 
@@ -92,21 +86,36 @@ conv({ dir })
       ));
     }
   })
-  .then<BubbName | undefined>(() => bubb({ dir }))
-  .then<string>((name?: BubbName) => {
-    if (!name) throw new Error();
+  .then(() => checkRuntime(cmds))
+  .then(() => {
+    const inst = construct({
+      initialDirectory,
+      wd,
+      cmds,
+      saneStatus: saneStatus(wd),
+    });
 
-    return name.meta.role === "lepo"
-      ? name.id
-      : lepo({ dir, inst, tail: name.id }).then<string>((text: string) =>
-        save({ dir, prev: name.id, role: "lepo", text })
-      );
+    debug("inst:", inst);
+
+    return inst;
   })
-  .then((id: string): string => {
-    Deno.stdout.writeSync(te.encode(META + HOW_TO_SEND));
-    return id;
-  })
-  .then<string>((id: string) => loop({ dir, inst, prev: id }))
+  .then((inst: string) =>
+    bubb({ dir })
+      .then<string>((name?: BubbName) => {
+        if (!name) throw new Error();
+
+        return name.meta.role === "lepo"
+          ? name.id
+          : lepo({ dir, inst, tail: name.id }).then<string>((text: string) =>
+            save({ dir, prev: name.id, role: "lepo", text })
+          );
+      })
+      .then((id: string): string => {
+        Deno.stdout.writeSync(te.encode(META + HOW_TO_SEND));
+        return id;
+      })
+      .then<string>((id: string) => loop({ dir, inst, prev: id }))
+  )
   .catch((e): void => {
     if (e === BYE) {
       Deno.stdout.writeSync(te.encode(META + "bye\n"));
