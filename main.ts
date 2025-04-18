@@ -21,7 +21,11 @@ const loop = ({ dir, inst, prev }: {
       if (e !== EXEC_LOOP_END) throw e;
     })
     .then<string>(user)
-    .then<string>((text: string) => save({ dir, prev, role: "user", text }))
+    .then<string>((text: string) =>
+      bubb({ dir }).then((name?: BubbName) =>
+        save({ dir, prev: name?.id as string, role: "user", text })
+      )
+    )
     .then<string>((id: string) =>
       lepo({ dir, inst, tail: id }).then<string>((text: string) =>
         save({ dir, prev: id, role: "lepo", text })

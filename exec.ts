@@ -22,14 +22,15 @@ export const loop = ({ dir, inst, prev }: {
   prev: string;
 }): Promise<string> =>
   bubb({ dir, id: prev })
-    .then((name?: BubbName): ReadonlyArray<ExecReq> => {
+    .then<string>((name?: BubbName) => {
       if (!name) throw new Error(`bubb#${prev} not found`);
 
-      return name.meta.role === "lepo"
-        ? convert(Deno.readTextFileSync(name.meta.path))
-        : [];
-    })
-    .then((execs: ReadonlyArray<ExecReq>): ReadonlyArray<ExecRes> => {
+      if (name.meta.role !== "lepo") throw END;
+
+      const execs = convert(Deno.readTextFileSync(name.meta.path));
+
+      if (execs.length === 0) throw END;
+
       const execRess: ExecRes[] = [];
 
       for (const { cmd, args } of execs) {
@@ -76,24 +77,18 @@ export const loop = ({ dir, inst, prev }: {
         }
       }
 
-      return execRess;
-    })
-    .then((execRess: ReadonlyArray<ExecRes>): ReadonlyArray<string> =>
-      execRess.map((execRes) => stringify({ ["execution-response"]: execRes }))
-    )
-    .then<string>((texts: ReadonlyArray<string>) => {
-      if (texts.length === 0) {
-        throw END;
-      } else {
-        const text = texts.join("\n");
+      if (execRess.length === 0) throw END;
 
-        debug("text:", text);
+      const text = execRess.map((execRes) =>
+        stringify({ ["execution-response"]: execRes })
+      ).join("\n");
 
-        return save({ dir, prev, role: "user", text }).then((id: string) =>
-          lepo({ dir, inst, tail: id }).then((text: string) =>
-            save({ dir, prev: id, role: "lepo", text })
-          )
+      debug("text:", text);
+
+      return save({ dir, prev: name.id, role: "user", text })
+        .then((id: string) =>
+          lepo({ dir, inst, tail: id })
+            .then((text: string) => save({ dir, prev: id, role: "lepo", text }))
         );
-      }
     })
     .then<string>((id: string) => loop({ dir, inst, prev: id }));
