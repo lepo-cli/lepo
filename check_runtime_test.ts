@@ -1,8 +1,14 @@
 import { checkRuntime } from "./check_runtime.ts";
+import { assertRejects } from "jsr:@std/assert";
 
 Deno.test({
-  name: "checkruntime",
+  name: "checkRuntime",
   permissions: { run: true },
-  fn: () =>
-    checkRuntime(["fd", "rg", "perl", "jq", "git", "ssh", "curl", "elinks"]),
+  fn: () => checkRuntime(["fd", "git"]),
+});
+
+Deno.test({
+  name: "checkRuntime fails",
+  permissions: { run: true },
+  fn: () => assertRejects(() => checkRuntime(["yrmp8ruzn2etjvgnfnx"])).then(),
 });
