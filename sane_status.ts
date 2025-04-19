@@ -1,3 +1,5 @@
+import { debug } from "./debug.ts";
+
 import { join } from "jsr:@std/path/join";
 
 export type Exec = {
@@ -33,13 +35,17 @@ export const saneStatus = (wd: string): SaneStatus => {
 
     const child = join(wd, name);
 
-    for (const { name: nm, isDirectory: isDir } of Deno.readDirSync(child)) {
-      if (!isDir) continue;
+    try {
+      for (const { name: nm, isDirectory: isDir } of Deno.readDirSync(child)) {
+        if (!isDir) continue;
 
-      if (nm === ".git") {
-        repoPaths.push(child);
-        continue outer;
+        if (nm === ".git") {
+          repoPaths.push(child);
+          continue outer;
+        }
       }
+    } catch (e) {
+      debug(`skip dir ${child}:`, e);
     }
   }
 
