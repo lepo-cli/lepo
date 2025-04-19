@@ -11,9 +11,9 @@
       let pkgs = nixpkgs.legacyPackages.${system};
       in {
         defaultPackage = pkgs.stdenv.mkDerivation {
-          pname    = "lepo";
-          version  = "0.0.0";
-          src      = ./.;
+          pname = "lepo";
+          version = "0.0.0";
+          src = ./.;
           LC_ALL = "en_US.UTF-8";
           nativeBuildInputs = [ pkgs.makeWrapper pkgs.deno pkgs.fd pkgs.git ];
           buildPhase = "DENO_DIR=$TMPDIR deno task build";
