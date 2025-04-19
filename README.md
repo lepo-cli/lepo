@@ -12,8 +12,7 @@ Lepo stands for "Llm tool for rEPOsitory"
 ## Todo
 
 - [x] MVP
-- [ ] Sane Lead 구현
+- [x] Sane Lead 구현
+- [x] Nix (Flake) 로 패키징
 - [ ] CLI 사용성 구현
-- [ ] executable 패키징
-- [ ] Nix (Flake) 로 패키징
 - [ ] 문서화
