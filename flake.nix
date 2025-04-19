@@ -14,8 +14,7 @@
           pname    = "lepo";
           version  = "0.1.0";
           src      = ./.;
-
-          # Runtime deps
+          LC_ALL = "en_US.UTF-8";
           buildInputs = [
             pkgs.fd
             pkgs.ripgrep
@@ -26,18 +25,16 @@
             pkgs.curl
             pkgs.elinks
           ];
-
-          # Build-time deps
           nativeBuildInputs = [
             pkgs.deno
             pkgs.fd
             pkgs.git
           ];
-
           buildPhase = "DENO_DIR=$TMPDIR deno task build";
           installPhase = "mkdir -p $out/bin && cp lepo $out/bin/lepo";
         };
         devShells.default = pkgs.mkShell {
+          LC_ALL = "en_US.UTF-8";
           buildInputs = [
             pkgs.deno
             pkgs.fd
