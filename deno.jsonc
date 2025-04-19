@@ -4,7 +4,8 @@
     "check": "deno check **/*.ts && deno lint && deno fmt --check",
     "test": "deno test --allow-read --allow-write --allow-env --allow-run",
     "compile": "deno compile --include inst.txt --include help.txt --allow-read --allow-write --allow-net --allow-env --allow-run --output lepo main.ts",
-    "dev": "DEV=1 deno run --env-file=.env.local --allow-read --allow-write --allow-net --allow-env --allow-run main.ts"
+    "dev": "DEV=1 deno run --env-file=.env.local --allow-read --allow-write --allow-net --allow-env --allow-run main.ts",
+    "build": "deno task test && deno task compile"
   },
   "exclude": [
     "_lepo_testspace_",
