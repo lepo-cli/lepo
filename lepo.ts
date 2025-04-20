@@ -1,22 +1,21 @@
 import { debug } from "./debug.ts";
 import type { BubbName, Role } from "./bubb.ts";
 import { conv } from "./conv.ts";
-import type { Content, GenerateContentResponse } from "npm:@google/genai";
-import { GoogleGenAI } from "npm:@google/genai";
+import OpenAI from "jsr:@openai/openai";
 
 export const PREFIX = "\n\x1b[33m>>> LEPO:\x1b[0m ";
 
 const te = new TextEncoder();
 
-const apiKey = Deno.env.get("GEMINI_API_KEY");
+const apiKey = Deno.env.get("OPENAI_API_KEY");
 
 if (!apiKey) {
-  console.error("GEMINI_API_KEY not set");
+  console.error("OPENAI_API_KEY not set");
   Deno.exit(1);
 }
 
-const ai = new GoogleGenAI({ apiKey });
-const MODEL = "gemini-2.0-flash-lite";
+const ai = new OpenAI({ apiKey });
+const MODEL = "gpt-4.1-mini";
 debug("MODEL:", MODEL);
 
 export const lepo = ({ dir, inst, tail }: {
@@ -26,35 +25,69 @@ export const lepo = ({ dir, inst, tail }: {
 }): Promise<string> =>
   Deno.stdout.write(te.encode(PREFIX))
     .then<ReadonlyArray<BubbName>>(() => conv({ dir, tail }))
-    .then((bnames: ReadonlyArray<BubbName>): Readonly<[Role, string]>[] =>
+    .then((bnames: ReadonlyArray<BubbName>) =>
       bnames.map(({ meta: { role, path } }): Readonly<[Role, string]> => [
         role,
         Deno.readTextFileSync(path),
       ])
     )
-    .then((tuples: Readonly<[Role, string]>[]): Content[] =>
-      tuples.map(([role, text]): Content => ({
-        role: role === "lepo" ? "model" : "user",
-        parts: [{ text }],
+    .then((tuples: ReadonlyArray<Readonly<[Role, string]>>) =>
+      tuples.map(([role, text]): {
+        readonly role: "assistant" | "user";
+        readonly content: string;
+      } => ({
+        role: role === "lepo" ? "assistant" : "user",
+        content: text,
       }))
     )
-    .then<AsyncGenerator<GenerateContentResponse>>((contents: Content[]) =>
-      ai.models.generateContentStream({
+    .then((
+      tuples: ReadonlyArray<{
+        readonly role: "assistant" | "user";
+        readonly content: string;
+      }>,
+    ) =>
+      ai.responses.stream({
+        input: [...tuples],
+        instructions: inst,
         model: MODEL,
-        config: { systemInstruction: inst },
-        contents,
       })
     )
-    .then<string>(async (gen: AsyncGenerator<GenerateContentResponse>) => {
-      const arr: string[] = [];
+    .then<string>(async (stream) => {
+      for await (const event of stream) {
+        const type = event.type;
 
-      for await (const res of gen) {
-        const text = res.candidates?.[0]?.content?.parts?.[0]?.text;
+        if (type === "response.created") {
+          debug("model:", event.response.model);
+        } else if (type === "response.output_text.delta") {
+          Deno.stdout.writeSync(te.encode(event.delta));
+        } else if (type === "response.completed") {
+          debug("usage:", event.response.usage);
 
-        Deno.stdout.writeSync(te.encode(text));
+          const output = event.response.output[0];
 
-        arr.push(text ?? "");
+          if (output?.type !== "message") {
+            throw Error(
+              'Expected output?.type: "message"' +
+                `, Actual output: ${output}` +
+                `, Actual output?.type: "${output?.type}"`,
+            );
+          }
+
+          const content = output.content[0];
+
+          if (content?.type !== "output_text") {
+            throw Error(
+              'Expected content?.type: "output_text"' +
+                `, Actual content: ${content}` +
+                `, Actual content?.type: "${content.type}"`,
+            );
+          }
+
+          return content.text;
+        } else {
+          debug("\x1b[90mEVENT\x1b[0m", type);
+        }
       }
 
-      return arr.join("");
+      throw new Error("Unexpected Response");
     });
