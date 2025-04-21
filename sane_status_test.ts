@@ -14,17 +14,19 @@ echo c > sub/c.txt
 echo d > sub/repo_2/d.txt
 echo e > not_a_repo/e.txt
 
-git init --initial-branch repo_0
-git add .
-git commit --message init
+LC_ALL=en_US.UTF-8
 
-git -C repo_1 init --initial-branch repo_1
-git -C repo_1 add .
-git -C repo_1 commit --message init
+git -c user.name=test -c user.email=t@e.st               init -b repo_0
+git -c user.name=test -c user.email=t@e.st               add .
+git -c user.name=test -c user.email=t@e.st               commit --message init
 
-git -C sub/repo_2 init --initial-branch repo_2
-git -C sub/repo_2 add .
-git -C sub/repo_2 commit --message init
+git -c user.name=test -c user.email=t@e.st -C repo_1     init -b repo_1
+git -c user.name=test -c user.email=t@e.st -C repo_1     add .
+git -c user.name=test -c user.email=t@e.st -C repo_1     commit --message init
+
+git -c user.name=test -c user.email=t@e.st -C sub/repo_2 init -b repo_2
+git -c user.name=test -c user.email=t@e.st -C sub/repo_2 add .
+git -c user.name=test -c user.email=t@e.st -C sub/repo_2 commit --message init
 `;
 
 Deno.test({

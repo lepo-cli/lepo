@@ -11,10 +11,11 @@
       let pkgs = nixpkgs.legacyPackages.${system};
       in {
         defaultPackage = pkgs.stdenv.mkDerivation {
+          # Works with `sanbox = relaxed` in nix.conf on Linux
+          __noChroot = true;
           pname = "lepo";
           version = "0.0.0";
           src = ./.;
-          LC_ALL = "en_US.UTF-8";
           nativeBuildInputs = [ pkgs.makeWrapper pkgs.deno pkgs.fd pkgs.git ];
           buildPhase = "DENO_DIR=$TMPDIR deno task build";
           installPhase = ''
@@ -28,7 +29,6 @@
           '';
         };
         devShells.default = pkgs.mkShell {
-          LC_ALL = "en_US.UTF-8";
           buildInputs = [
             pkgs.deno pkgs.fd      pkgs.ripgrep pkgs.perl   pkgs.jq
             pkgs.git  pkgs.openssh pkgs.curl    pkgs.elinks
