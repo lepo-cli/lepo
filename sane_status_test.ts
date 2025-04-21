@@ -14,8 +14,6 @@ echo c > sub/c.txt
 echo d > sub/repo_2/d.txt
 echo e > not_a_repo/e.txt
 
-LC_ALL=en_US.UTF-8
-
 git -c user.name=test -c user.email=t@e.st               init -b repo_0
 git -c user.name=test -c user.email=t@e.st               add .
 git -c user.name=test -c user.email=t@e.st               commit --message init
@@ -63,20 +61,14 @@ Deno.test({
       assertFalse(na);
 
       assertEquals(r0.path, testdir);
-      assertEquals(
-        r0.status.output,
-        "On branch repo_0\nnothing to commit, working tree clean\n",
-      );
+      assertEquals(r0.status.output, "");
       assertEquals(
         r0.files.output,
         ".gitignore\na.txt\nnot_a_repo/e.txt\nsub/c.txt\n",
       );
 
       assertEquals(r1.path, join(testdir, "repo_1"));
-      assertEquals(
-        r1.status.output,
-        "On branch repo_1\nnothing to commit, working tree clean\n",
-      );
+      assertEquals(r1.status.output, "");
       assertEquals(r1.files.output, "b.txt\n");
 
       assert(fdOutput.trim().split("\n").length === 11);

@@ -60,6 +60,7 @@ export const saneStatus = (wd: string): SaneStatus => {
           "-c",
           "core.quotepath=false",
           "status",
+          "--porcelain=v2",
         ],
       }).outputSync();
 
@@ -69,7 +70,7 @@ export const saneStatus = (wd: string): SaneStatus => {
         path,
         {
           command:
-            `git -C "${path}" --git-dir .git -c core.quotepath=false status`,
+            `git -C "${path}" --git-dir .git -c core.quotepath=false status --porcelain=v2`,
           output: td.decode(stdout),
         },
       ];
