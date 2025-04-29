@@ -6,9 +6,9 @@ const DEFAULT = Symbol();
 
 const handlers: ReadonlyMap<
   typeof DEFAULT | string,
-  (...args: string[]) => void
+  (...args: ReadonlyArray<string>) => void
 > = new Map()
-  .set(DEFAULT, (_tail?: string, ...rest: string[]) => {
+  .set(DEFAULT, (_tail?: string, ...rest: ReadonlyArray<string>) => {
     if (rest.length > 0) {
       console.error("too many args:", rest);
       console.info("--help to get help");
@@ -18,7 +18,7 @@ const handlers: ReadonlyMap<
     // TODO:
     main({});
   })
-  .set("new", (...args: string[]) => {
+  .set("new", (...args: ReadonlyArray<string>) => {
     if (args.length > 0) {
       console.error("too many args:", args);
       console.info("--help to get help");
@@ -28,7 +28,7 @@ const handlers: ReadonlyMap<
     // TODO:
     main({});
   })
-  .set("init", (path?: string, ...rest: string[]) => {
+  .set("init", (path?: string, ...rest: ReadonlyArray<string>) => {
     if (rest.length > 0) {
       console.error("too many args:", rest);
       console.info("--help to get help");
@@ -39,7 +39,7 @@ const handlers: ReadonlyMap<
     Deno.mkdirSync(dir, { recursive: true });
     console.info(`"${dir}" created`);
   })
-  .set("ls", (...args: string[]) => {
+  .set("ls", (...args: ReadonlyArray<string>) => {
     if (args.length > 0) {
       console.error("too many args:", args);
       console.info("--help to get help");
@@ -48,7 +48,7 @@ const handlers: ReadonlyMap<
 
     // TODO:
   })
-  .set("cat", (..._ids: string[]) => {
+  .set("cat", (..._ids: ReadonlyArray<string>) => {
     // TODO:
   });
 
