@@ -1,5 +1,5 @@
 import { debug } from "./debug.ts";
-import type { BubbName, Role } from "./bubb.ts";
+import type { BubbName, Role, Ulid } from "./bubb.ts";
 import { conv } from "./conv.ts";
 import OpenAI from "jsr:@openai/openai";
 
@@ -21,7 +21,7 @@ debug("MODEL:", MODEL);
 export const lepo = ({ dir, inst, tail }: {
   dir: string;
   inst: string;
-  tail: string;
+  tail: Ulid;
 }): Promise<string> =>
   Deno.stdout.write(te.encode(PREFIX))
     .then<ReadonlyArray<BubbName>>(() => conv({ dir, tail }))

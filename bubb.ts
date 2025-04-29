@@ -1,16 +1,20 @@
 import { join } from "jsr:@std/path/join";
 
+const __ULID = Symbol("Ulid");
+
+export type Ulid = string & { [__ULID]: undefined };
+
 export type Role = "user" | "lepo" | "meta";
 
 export type BubbMeta = {
-  readonly prev?: string;
+  readonly prev?: Ulid;
   readonly role: Role;
   readonly isHidden: boolean;
   readonly path: string;
 };
 
 export type BubbName = {
-  readonly id: string;
+  readonly id: Ulid;
   readonly meta: BubbMeta;
 };
 
@@ -55,7 +59,7 @@ export async function* readBubbNames({ dir }: {
 
     // head 분기
     if (prevtxt === "nil.txt") {
-      yield { id, meta: { role, isHidden, path } };
+      yield { id: id as Ulid, meta: { role, isHidden, path } };
     } else {
       // .txt 로 끝나야 함
       if (!prevtxt.endsWith(".txt")) continue;
@@ -65,14 +69,17 @@ export async function* readBubbNames({ dir }: {
       const prev = prevtxt.substring(0, 26);
       if (!ULID_REGEX.test(prev)) continue;
 
-      yield { id, meta: { role, isHidden, prev, path } };
+      yield {
+        id: id as Ulid,
+        meta: { role, isHidden, prev: prev as Ulid, path },
+      };
     }
   }
 }
 
 export const bubb = ({ dir, id: i }: {
   dir: string;
-  id?: string;
+  id?: Ulid;
 }): Promise<BubbName | undefined> =>
   Deno.stat(dir)
     .then(({ isDirectory }: Deno.FileInfo): void => {
@@ -81,7 +88,7 @@ export const bubb = ({ dir, id: i }: {
     .then(() => readBubbNames({ dir }))
     .then<BubbName | undefined>(async (names: AsyncGenerator<BubbName>) => {
       const arr: BubbName[] = [];
-      const map: Map<string, BubbMeta> = new Map();
+      const map: Map<Ulid, BubbMeta> = new Map();
 
       for await (const { id, meta: { prev, role, isHidden, path } } of names) {
         if (i) {

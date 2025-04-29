@@ -1,5 +1,5 @@
 import { debug } from "./debug.ts";
-import type { BubbName } from "./bubb.ts";
+import type { BubbName, Ulid } from "./bubb.ts";
 import { bubb } from "./bubb.ts";
 import type { ExecReq, ExecRes } from "./protocol.ts";
 import { convert } from "./protocol.ts";
@@ -19,10 +19,10 @@ const pretty = ({ cmd, args }: ExecReq): string =>
 export const loop = ({ dir, inst, prev }: {
   dir: string;
   inst: string;
-  prev: string;
-}): Promise<string> =>
+  prev: Ulid;
+}): Promise<Ulid> =>
   bubb({ dir, id: prev })
-    .then<string>((name?: BubbName) => {
+    .then<Ulid>((name?: BubbName) => {
       if (!name) throw new Error(`bubb#${prev} not found`);
 
       if (name.meta.role !== "lepo") throw END;
@@ -86,9 +86,9 @@ export const loop = ({ dir, inst, prev }: {
       debug("text:", text);
 
       return save({ dir, prev: name.id, role: "user", text })
-        .then((id: string) =>
+        .then((id: Ulid) =>
           lepo({ dir, inst, tail: id })
             .then((text: string) => save({ dir, prev: id, role: "lepo", text }))
         );
     })
-    .then<string>((id: string) => loop({ dir, inst, prev: id }));
+    .then<Ulid>((id: Ulid) => loop({ dir, inst, prev: id }));

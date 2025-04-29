@@ -1,4 +1,4 @@
-import type { BubbName, Role } from "./bubb.ts";
+import type { BubbName, Role, Ulid } from "./bubb.ts";
 import { bubb } from "./bubb.ts";
 import { join } from "jsr:@std/path/join";
 import { ulid } from "jsr:@std/ulid/ulid";
@@ -7,17 +7,17 @@ const te = new TextEncoder();
 
 export const save = ({ dir, prev, role, isHidden, text }: {
   dir: string;
-  prev: string;
+  prev: Ulid;
   role: Role;
   isHidden?: boolean;
   text: string;
-}): Promise<string> =>
+}): Promise<Ulid> =>
   bubb({ dir, id: prev })
-    .then((name?: BubbName): string => {
-      if (name) return ulid();
+    .then((name?: BubbName): Ulid => {
+      if (name) return ulid() as Ulid;
       else throw new Error(`bubb#${prev} not found`);
     })
-    .then<string>((curr: string) =>
+    .then<Ulid>((curr: Ulid) =>
       Promise
         .resolve(`${curr}-${role.charAt(0)}${isHidden ? "1" : "0"}-${prev}`)
         .then((name: string): string => join(dir, `${name}.txt`))
@@ -32,5 +32,5 @@ export const save = ({ dir, prev, role, isHidden, text }: {
             )
           )
         )
-        .then((): string => curr)
+        .then((): Ulid => curr)
     );

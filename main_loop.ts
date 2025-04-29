@@ -1,5 +1,5 @@
 import { debug } from "./debug.ts";
-import type { BubbName, Role } from "./bubb.ts";
+import type { BubbName, Role, Ulid } from "./bubb.ts";
 import { bubb } from "./bubb.ts";
 import { conv } from "./conv.ts";
 import { END as EXEC_LOOP_END, loop as execLoop } from "./exec_loop.ts";
@@ -15,24 +15,24 @@ import { checkRuntime } from "./check_runtime.ts";
 const loop = ({ dir, inst, prev }: {
   dir: string;
   inst: string;
-  prev: string;
-}): Promise<string> =>
+  prev: Ulid;
+}): Promise<Ulid> =>
   execLoop({ dir, inst, prev })
     .catch((e): void => {
       if (e !== EXEC_LOOP_END) throw e;
     })
     .then<string>(user)
-    .then<string>((text: string) =>
-      bubb({ dir }).then((name?: BubbName) =>
-        save({ dir, prev: name?.id as string, role: "user", text })
+    .then<Ulid>((text: string) =>
+      bubb({ dir }).then<Ulid>((name?: BubbName) =>
+        save({ dir, prev: name?.id as Ulid, role: "user", text })
       )
     )
-    .then<string>((id: string) =>
-      lepo({ dir, inst, tail: id }).then<string>((text: string) =>
+    .then<Ulid>((id: Ulid) =>
+      lepo({ dir, inst, tail: id }).then<Ulid>((text: string) =>
         save({ dir, prev: id, role: "lepo", text })
       )
     )
-    .then<string>((id: string) => loop({ dir, inst, prev: id }));
+    .then<Ulid>((id: Ulid) => loop({ dir, inst, prev: id }));
 
 const prefix: ReadonlyMap<Role, string> = new Map([
   ["lepo", LEPO],
@@ -46,7 +46,7 @@ const HOW_TO_SEND =
 const te = new TextEncoder();
 
 export const main = ({ tail }: {
-  tail?: string;
+  tail?: Ulid;
 }) => {
   const dir = ".lepo";
   debug("data dir:", dir);
@@ -104,20 +104,20 @@ export const main = ({ tail }: {
     })
     .then((inst: string) =>
       bubb({ dir, id: tail })
-        .then<string>((name?: BubbName) => {
+        .then<Ulid>((name?: BubbName) => {
           if (!name) throw new Error(`bubb#${tail} not found`);
 
           return name.meta.role === "lepo"
             ? name.id
-            : lepo({ dir, inst, tail: name.id }).then<string>((text: string) =>
+            : lepo({ dir, inst, tail: name.id }).then<Ulid>((text: string) =>
               save({ dir, prev: name.id, role: "lepo", text })
             );
         })
-        .then((id: string): string => {
+        .then((id: Ulid): Ulid => {
           Deno.stdout.writeSync(te.encode(META + HOW_TO_SEND));
           return id;
         })
-        .then<string>((id: string) => loop({ dir, inst, prev: id }))
+        .then<Ulid>((id: Ulid) => loop({ dir, inst, prev: id }))
     )
     .catch((e): void => {
       if (e === BYE) {
